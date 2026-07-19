@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>注册营养师 · 晓晓老师课堂（蛋白质·今日新课）</title>
+<style>
+  :root{
+    --bg:#f3f7fb; --card:#ffffff; --ink:#23303f; --sub:#5b6b7c;
+    --brand:#ff7a59; --brand2:#ffb347; --green:#39b27c; --blue:#3a86ff;
+    --purple:#8a5cff; --soft:#eef4fb; --line:#e2ebf3;
+  }
+  *{box-sizing:border-box;}
+  /* 字体：宋体（SimSun）小四号≈16px，清晰大字 */
+  html,body{margin:0;padding:0;
+    font-family:"宋体","SimSun","Songti SC","STSong","Microsoft YaHei",serif;
+    background:var(--bg);color:var(--ink);font-size:16px;}
+  /* 顶部条 */
+  .topbar{position:sticky;top:0;z-index:30;background:linear-gradient(135deg,#ff8a65,#ffb347);
+    color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 10px rgba(0,0,0,.08);flex-wrap:wrap;}
+  .avatar{width:42px;height:42px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:22px;box-shadow:0 2px 6px rgba(0,0,0,.15);}
+  .titles{line-height:1.25;flex:1;min-width:160px;}
+  .titles b{font-size:17px;}
+  .titles small{opacity:.92;font-size:12.5px;}
+  .score-chip{background:rgba(255,255,255,.25);border-radius:20px;padding:5px 12px;font-weight:700;font-size:15px;}
+  .ctrls{display:flex;gap:6px;flex-wrap:wrap;}
+  .btn{border:none;border-radius:20px;padding:8px 13px;font-size:14px;cursor:pointer;font-weight:600;font-family:inherit;
+    background:#fff;color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.12);transition:.15s;}
+  .btn:hover{transform:translateY(-1px);}
+  .btn.ghost{background:rgba(255,255,255,.22);color:#fff;}
+  .btn.on{background:#fff;color:var(--green);}
+
+  /* 进度 */
+  .progress{height:5px;background:#ffe1d3;}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,#39b27c,#3a86ff);width:0;transition:.3s;}
+
+  /* 主体（底部留白给字幕控制条，字幕不挡讲解） */
+  .stage{max-width:840px;margin:0 auto;padding:18px 16px 200px;}
+  .navmap{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+  .navmap button{border:1px solid var(--line);background:#fff;border-radius:16px;padding:5px 11px;font-size:13px;cursor:pointer;color:var(--sub);font-family:inherit;}
+  .navmap button.active{background:var(--brand);color:#fff;border-color:var(--brand);}
+  .navmap button.done{background:var(--soft);color:var(--green);border-color:#bfe6d6;}
+
+  .slide{background:var(--card);border-radius:18px;padding:22px;box-shadow:0 6px 20px rgba(35,48,63,.06);animation:pop .35s ease;}
+  @keyframes pop{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  .slide h2{margin:0 0 4px;font-size:24px;display:flex;align-items:center;gap:8px;}
+  .slide .tag{font-size:13px;color:var(--brand);background:#fff0ea;padding:3px 9px;border-radius:10px;font-weight:700;}
+  .slide p{line-height:1.95;font-size:16px;color:var(--ink);}
+  .slide .lead{color:var(--sub);font-size:15px;margin-top:0;}
+
+  .card{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:12px 0;background:var(--soft);font-size:15.5px;line-height:1.8;}
+  .card.ask{background:#fff7ec;border-color:#ffe2b3;}
+  .card.tip{background:#eef9f3;border-color:#cdeede;}
+  .card b{color:var(--brand);}
+
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px;}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+  th{background:var(--soft);color:var(--sub);font-weight:700;}
+  td .ico{font-size:18px;margin-right:6px;}
+
+  .mnemonic{background:linear-gradient(135deg,#fff3ec,#fff8e8);border-left:5px solid var(--brand);
+    border-radius:12px;padding:13px 16px;margin:12px 0;font-size:17px;font-weight:700;color:#b5431f;line-height:1.7;}
+  .mnemonic small{display:block;font-weight:400;color:var(--sub);font-size:13.5px;margin-top:4px;}
+
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+  .chip{background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px 12px;font-size:14px;cursor:pointer;font-family:inherit;}
+
+  .pager{display:flex;justify-content:space-between;margin-top:16px;gap:10px;}
+  .pager .btn{padding:11px 18px;font-size:15px;}
+
+  /* 案例图 */
+  .case{border:1px dashed var(--brand);border-radius:14px;padding:12px 14px;margin:14px 0;background:#fffdfb;}
+  .case-title{font-weight:700;color:var(--brand);font-size:15px;margin-bottom:8px;}
+  .case svg{width:100%;height:auto;display:block;}
+  .case-cap{font-size:13.5px;color:var(--sub);margin-top:6px;}
+
+  /* 底部字幕 + 播放位置控制条 —— 固定底部，半透明，不遮挡讲解区 */
+  .subtitle{position:fixed;left:0;right:0;bottom:0;z-index:25;background:rgba(20,28,38,.86);
+    color:#fff;padding:10px 16px 12px;font-size:17px;line-height:1.6;backdrop-filter:blur(6px);
+    border-top:1px solid rgba(255,255,255,.15);min-height:104px;display:flex;flex-direction:column;gap:8px;}
+  .sub-row1{display:flex;align-items:center;gap:10px;}
+  .sub-row1 .spk{font-size:20px;}
+  .sub-row1 .txt{flex:1;}
+  .sub-row1 .cur{background:#ffd24d;color:#222;border-radius:4px;padding:0 2px;}
+  .sub-row1 .pos{font-size:13px;opacity:.8;white-space:nowrap;}
+  .sub-row2{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .sbtn{border:none;border-radius:18px;padding:7px 13px;font-size:14px;cursor:pointer;font-weight:600;font-family:inherit;
+    background:#fff;color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .sbtn:hover{transform:translateY(-1px);}
+  .sbtn.play{background:var(--green);color:#fff;}
+  .sentbar{display:flex;gap:4px;flex-wrap:wrap;flex:1;}
+  .seg{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;border-radius:8px;
+    min-width:26px;padding:4px 0;font-size:12px;cursor:pointer;font-family:inherit;text-align:center;}
+  .seg.done{background:rgba(57,178,124,.55);border-color:rgba(57,178,124,.8);}
+  .seg.on{background:#ffd24d;color:#222;border-color:#ffd24d;font-weight:700;}
+
+  /* 弹窗（测验 / 费曼 / 小明 / 复习） */
+  .mask{position:fixed;inset:0;background:rgba(20,28,38,.55);z-index:40;display:none;align-items:center;justify-content:center;padding:18px;}
+  .mask.show{display:flex;}
+  .modal{background:#fff;border-radius:18px;max-width:580px;width:100%;max-height:86vh;overflow:auto;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.3);font-family:inherit;}
+  .modal h3{margin:0 0 6px;font-size:21px;}
+  .modal .who{font-size:13.5px;color:var(--sub);margin-bottom:12px;}
+  .opt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;
+    padding:12px 14px;margin:8px 0;font-size:15.5px;cursor:pointer;transition:.15s;font-family:inherit;}
+  .opt:hover{border-color:var(--brand);}
+  .opt.correct{background:#eafaf1;border-color:var(--green);color:#1c7a4d;}
+  .opt.wrong{background:#fdeaea;border-color:#e06b6b;color:#b33232;}
+  .opt:disabled{cursor:default;}
+  .explain{background:var(--soft);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14.5px;line-height:1.8;display:none;}
+  .explain.show{display:block;}
+  .modal .row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+  textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:12px;padding:10px;font-size:14.5px;font-family:inherit;resize:vertical;}
+  .stars{font-size:26px;letter-spacing:4px;cursor:pointer;}
+  .stars span{color:#d9d9d9;}
+  .stars span.lit{color:#ffb347;}
+
+  .badge{display:inline-block;background:#fff0ea;color:var(--brand);border-radius:12px;padding:4px 10px;font-size:12.5px;margin:3px;font-weight:700;}
+  .toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#23303f;color:#fff;
+    padding:10px 18px;border-radius:24px;z-index:60;font-size:14px;opacity:0;transition:.3s;pointer-events:none;}
+  .toast.show{opacity:1;}
+  .feynman-list li{margin:8px 0;line-height:1.8;font-size:15.5px;}
+  .ok{color:var(--green);font-weight:700;}
+  .foot{text-align:center;color:var(--sub);font-size:12.5px;margin:6px 0 0;}
+</style>
+</head>
+
+</head>
+<body>
+
+<div class="topbar">
+  <div class="avatar">👩‍🏫</div>
+  <div class="titles"><b>注册营养师 · 晓晓老师课堂（蛋白质·考点3-4）</b><br><small>今日新课：蛋白质（氨基酸/优质vs不完全/互补/作用/来源/吃多少）</small></div>
+  <div class="score-chip">⭐ <span id="score">0</span></div>
+  <div class="ctrls">
+    <button class="btn" id="playBtn">▶ 听晓晓老师讲（本课）</button>
+    <select class="btn" id="voiceSel" title="选择晓晓老师的声音"></select>
+    <select class="btn" id="rateSel" title="语速（可调速）"><option value="0.8">0.8x</option><option value="1" selected>1.0x</option><option value="1.2">1.2x</option><option value="1.4">1.4x</option></select>
+    <button class="btn ghost" id="rollBtn" title="随机抽一道题考考你">🎲 考考我</button>
+    <button class="btn ghost on" id="timerBtn" title="不定时自动抽题/提问（随机间隔）">⏰ 不定时提问</button>
+  </div>
+</div>
+<div class="progress"><i id="prog"></i></div>
+
+<div class="stage">
+  <div class="navmap" id="navmap"></div>
+  <div class="slide" id="slide"></div>
+  <div class="foot">提示：电脑 Edge / Chrome 打开，点「听晓晓老师讲」可听神经网络语音；底部字幕不挡讲解，可用「上一句/下一句」和句子进度条自由调播放位置。</div>
+</div>
+
+<!-- 底部字幕 + 播放位置控制 -->
+<div class="subtitle" id="subbar">
+  <div class="sub-row1">
+    <span class="spk">🔊</span>
+    <span class="txt" id="subtxt">点上方「听晓晓老师讲（本课）」，字幕会同步出现在这里～</span>
+    <span class="pos" id="posTxt">句 0/0</span>
+  </div>
+  <div class="sub-row2">
+    <button class="sbtn" id="prevS">⏮ 上一句</button>
+    <button class="sbtn play" id="playS">▶ 播放</button>
+    <button class="sbtn" id="nextS">下一句 ⏭</button>
+    <div class="sentbar" id="sentbar"></div>
+  </div>
+</div>
+
+<!-- 弹窗 -->
+<div class="mask" id="mask">
+  <div class="modal" id="modal"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const LESSONS = [{"id":"open","title":"👋 开场白","tag":"第0站 · 地图","narr":"同学们好，我是晓晓老师。今天这一课，咱们先复习一下地基和昨天的脂类，再学一道超重要、考试必考的新菜：蛋白质（考点3-4）——它是身体的\"砖块\"，长肌肉、造抗体全靠它。跟着晓晓老师：先复习口诀，搞懂蛋白质是啥、由什么搭成，分清优质蛋白和不完全蛋白，学会\"蛋白质互补\"，再看它管什么用、从哪来、每天吃多少，最后费曼自检、小明提问、来场测验。出发！","html":"<p class=\"lead\">今天学身体的\"砖块\" 🧱——蛋白质（考点3-4）</p>\n    <div class=\"card ask\"><b>晓晓老师：</b>先唤醒旧口诀，再学蛋白质这道硬菜。哪怕初中生也能听懂、记住、讲给别人听。</div>\n    <div class=\"mnemonic\">学习路线：复习口诀 → 是什么 → 氨基酸 → 优质/不完全 → 互补 → 生理作用 → 食物来源 → 吃多少 → 费曼自检 → 小明互动 → 终极测验<small>跟着导航条走，每一站都有口诀和提问。</small></div>"},{"id":"review","title":"🔁 复习站（唤醒旧课）","tag":"复习 · 唤醒口诀","narr":"先复习！蛋脂碳维矿水纤，七兄弟把健康连——蛋白质是老大，像砖块。昨天学了脂类：甘油磷脂固醇三兄弟，脂肪每克9千卡，还当出租车载A D E K。前天学了能量：蛋白碳水各4卡、脂肪9卡，进多出少会囤肉。今天加蛋白质这道硬菜，看看它除了长肌肉还干啥。点下面按钮先考考自己。","html":"<p class=\"lead\">唤醒旧口诀，再学蛋白质 🔔</p>\n    <div class=\"mnemonic\">蛋脂碳维矿水纤，七兄弟把健康连！<small>蛋=蛋白质（砖块），脂=脂类，碳=碳水。</small></div>\n    <div class=\"mnemonic\">甘油磷脂固醇三，能量膜材激素源。<small>脂类三兄弟，先唤醒。</small></div>\n    <div class=\"mnemonic\">蛋白碳水各四卡，脂肪独吞九卡家。<small>能量站：每克产能蛋白4、碳水4、脂肪9。</small></div>\n    <button class=\"btn\" onclick=\"openReview()\">📋 旧口诀小测（3问）</button>"},{"id":"pwhat","title":"🧱 蛋白质是身体的\"砖块\"","tag":"第1站 · 是什么","narr":"蛋白质，是身体的\"砖块\"，也是\"修理工\"和\"兵工厂\"。你身上的肌肉、皮肤、头发、指甲，还有帮你抵抗病菌的抗体、帮你消化的酶，主要都是蛋白质做的。它和脂类、碳水一样，也是三大产能营养素之一，每克能烧出4千卡。一句话：没有蛋白质，就没有\"你\"。","html":"<p>一句话记住它的身份：<b>身体的砖块 + 修理工 + 兵工厂</b>。</p>\n    <div class=\"card tip\"><b>核心：</b>肌肉、皮肤、器官、血液、抗体、酶，主要成分都是蛋白质。它是构成身体最重要的\"材料\"。</div>\n    <div class=\"mnemonic\">蛋白质是身体砖，长肉修伤造抗体；没有蛋白没有你，三大产能它占一。<small>蛋白质每克产能 4 千卡（和碳水一样，比脂肪9千卡少）。</small></div>"},{"id":"pamino","title":"🧩 蛋白质由氨基酸搭成","tag":"第2站 · 氨基酸","narr":"蛋白质不是铁板一块，它是由更小的\"小积木\"——氨基酸，一个一个搭起来的。搭人体蛋白质的氨基酸大约有20种。其中有9种特别金贵，叫\"必需氨基酸\"：身体自己造不出来，必须靠嘴巴从食物里吃进来。剩下那11种，身体能自己造，叫\"非必需氨基酸\"。注意：非必需不是不重要，是身体能自己合成。","html":"<p>蛋白质 = 约 <b>20 种氨基酸</b> 搭成的\"积木人\" 🧱</p>\n    <div class=\"case\">\n      <div class=\"case-title\">🧩 案例图：氨基酸积木（20块，9块红色=必需）</div>\n      <svg viewBox=\"0 0 680 190\" role=\"img\" aria-label=\"氨基酸积木\">\n        <rect x=\"14\" y=\"20\" width=\"652\" height=\"150\" rx=\"16\" fill=\"#fffdfb\" stroke=\"#ffb347\" stroke-width=\"2\"/>\n        <text x=\"120\" y=\"52\" font-size=\"26\" text-anchor=\"middle\">🧱</text>\n        <text x=\"120\" y=\"86\" font-size=\"14\" text-anchor=\"middle\" fill=\"#b5431f\" font-weight=\"bold\" font-family=\"SimSun,serif\">20种氨基酸</text>\n        <text x=\"120\" y=\"112\" font-size=\"12.5\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">搭成蛋白质</text>\n        <text x=\"120\" y=\"134\" font-size=\"12.5\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">像积木拼身体</text>\n        <rect x=\"262\" y=\"58\" width=\"156\" height=\"74\" rx=\"12\" fill=\"#ffe3e0\" stroke=\"#ff7a59\" stroke-width=\"2\"/>\n        <text x=\"340\" y=\"92\" font-size=\"15\" text-anchor=\"middle\" fill=\"#b5431f\" font-weight=\"bold\" font-family=\"SimSun,serif\">9种必需(红)</text>\n        <text x=\"340\" y=\"116\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">身体造不出，必须吃</text>\n        <rect x=\"470\" y=\"58\" width=\"156\" height=\"74\" rx=\"12\" fill=\"#eaf1fb\" stroke=\"#3a86ff\" stroke-width=\"2\"/>\n        <text x=\"548\" y=\"92\" font-size=\"15\" text-anchor=\"middle\" fill=\"#1f5bb5\" font-weight=\"bold\" font-family=\"SimSun,serif\">11种非必需</text>\n        <text x=\"548\" y=\"116\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">身体能自己造</text>\n      </svg>\n      <div class=\"case-cap\">必需 ≠ 更重要，只是身体造不出、得从食物来。</div>\n    </div>\n    <div class=\"mnemonic\">二十氨基酸搭成身，九种必需不能省；身体造不出，必须嘴来进。<small>成人9种必需氨基酸（含组氨酸）；其余11种身体能自合成。</small></div>"},{"id":"pquality","title":"⚖️ 优质蛋白 vs 不完全蛋白","tag":"第3站 · 分两类","narr":"蛋白质分两类，看它含不含齐那9种必需氨基酸。\"优质蛋白\"（也叫完全蛋白）：9种必需氨基酸全都有，而且比例刚好合人体需要，吃进去利用率高——代表是鸡蛋、牛奶、鱼肉、瘦肉，还有大豆。\"不完全蛋白\"：缺那么一两种必需氨基酸，单吃不够好——比如谷类（米面）缺赖氨酸，玉米缺色氨酸，豆类相对缺蛋氨酸。所以光吃白米饭，蛋白质质量一般。","html":"<table>\n      <tr><th>类型</th><th>特点</th><th>代表食物</th></tr>\n      <tr><td>优质蛋白<br>(完全蛋白)</td><td>9种必需氨基酸全有、比例好，利用率高</td><td>鸡蛋、牛奶、鱼、瘦肉、<b>大豆</b></td></tr>\n      <tr><td>不完全蛋白</td><td>缺1~2种必需氨基酸，单吃不够好</td><td>米面(缺赖氨酸)、玉米(缺色氨酸)、豆类(相对缺蛋氨酸)</td></tr>\n    </table>\n    <div class=\"mnemonic\">优质蛋白全又齐，蛋奶肉鱼大豆里；谷缺赖氨玉缺色，单吃不全要留意。<small>大豆是植物里唯一的\"优质蛋白冠军\"。</small></div>"},{"id":"pcomp","title":"🧩 蛋白质互补作用","tag":"第4站 · 互补","narr":"谷类缺赖氨酸怎么办？有办法：\"蛋白质互补作用\"——把两种不完全蛋白搭在一起，你缺的我补上，我缺的你补上，合起来就齐全了。最经典的搭配：米饭配豆腐（或红豆），馒头配豆浆。大豆补足谷类缺的赖氨酸，谷类补足大豆缺的蛋氨酸。记住：品种越杂、荤素搭配，蛋白质越\"完整\"。","html":"<div class=\"case\">\n      <div class=\"case-title\">🧩 案例图：蛋白质互补拼图（米饭 + 豆腐）</div>\n      <svg viewBox=\"0 0 680 180\" role=\"img\" aria-label=\"蛋白质互补\">\n        <rect x=\"18\" y=\"20\" width=\"300\" height=\"140\" rx=\"14\" fill=\"#fdeaea\" stroke=\"#e06b6b\" stroke-width=\"2\"/>\n        <text x=\"168\" y=\"62\" font-size=\"30\" text-anchor=\"middle\">🍚</text>\n        <text x=\"168\" y=\"98\" font-size=\"14\" text-anchor=\"middle\" fill=\"#b33232\" font-weight=\"bold\" font-family=\"SimSun,serif\">米饭(谷类)</text>\n        <text x=\"168\" y=\"124\" font-size=\"12.5\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">缺赖氨酸 ❌</text>\n        <text x=\"340\" y=\"98\" font-size=\"30\" text-anchor=\"middle\">➕</text>\n        <rect x=\"362\" y=\"20\" width=\"300\" height=\"140\" rx=\"14\" fill=\"#eafaf1\" stroke=\"#39b27c\" stroke-width=\"2\"/>\n        <text x=\"512\" y=\"62\" font-size=\"30\" text-anchor=\"middle\">🧈🫘</text>\n        <text x=\"512\" y=\"98\" font-size=\"14\" text-anchor=\"middle\" fill=\"#1c7a4d\" font-weight=\"bold\" font-family=\"SimSun,serif\">豆腐(大豆)</text>\n        <text x=\"512\" y=\"124\" font-size=\"12.5\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">补赖氨酸 ✅</text>\n        <text x=\"340\" y=\"172\" font-size=\"13\" text-anchor=\"middle\" fill=\"#23303f\" font-family=\"SimSun,serif\">拼一起 → 必需氨基酸齐全，利用率翻倍</text>\n      </svg>\n      <div class=\"case-cap\">谷豆搭配，是咱中国人最实惠的\"优质蛋白组合\"。</div>\n    </div>\n    <div class=\"mnemonic\">米饭豆腐配一对，缺的补上利用率倍；蛋白互补记心间，谷豆搭配最实惠。<small>你缺的我补、我缺的你补，合起来就齐全。</small></div>"},{"id":"pfunc","title":"🛠️ 蛋白质管什么用？","tag":"第5站 · 生理作用","narr":"蛋白质主要干四件大事：第一，构成和修补身体——肌肉、皮肤、器官、血液都靠它，伤口长好也靠它；第二，调节生理——酶帮消化、激素传信号、抗体打病毒，都是蛋白质；第三，运送物质——血红蛋白运氧气，就是蛋白质；第四，供能——每克4千卡，但它是\"备用燃料\"，只有糖和脂肪不够时，身体才拿蛋白质当能量烧（很浪费，因为蛋白更该用来长身体）。","html":"<div class=\"chips\">\n      <span class=\"chip\">① 构成 / 修补身体</span>\n      <span class=\"chip\">② 调节生理（酶·激素·抗体）</span>\n      <span class=\"chip\">③ 运送物质（血红蛋白运氧）</span>\n      <span class=\"chip\">④ 供能（4千卡/g，备用）</span>\n    </div>\n    <div class=\"mnemonic\">构成修补是第一，酶素抗体调生理；运氧运物它来帮，糖脂不够才供能。<small>蛋白的\"正职\"是长身体，供能是\"兼职\"且浪费。</small></div>"},{"id":"psrc","title":"🍽️ 蛋白质从哪来？","tag":"第6站 · 食物来源","narr":"蛋白质从哪来？两条路：动物性——鱼、禽、蛋、奶、瘦肉，这些都是优质蛋白；植物性——主要是大豆和豆制品（豆腐、豆浆、黑豆），大豆是植物里唯一的\"优质蛋白冠军\"。注意：米面蔬菜里也有蛋白，但属于不完全蛋白，要搭配着吃才齐。每天一杯奶、一个蛋、一两肉、一块豆腐，基本就够了。","html":"<div class=\"case\">\n      <div class=\"case-title\">🍽️ 案例图：小明的一天蛋白质餐盘（≈60克）</div>\n      <svg viewBox=\"0 0 680 175\" role=\"img\" aria-label=\"小明的一天蛋白质餐盘\">\n        <rect x=\"20\" y=\"22\" width=\"312\" height=\"132\" rx=\"14\" fill=\"#fff7ec\" stroke=\"#ffb347\" stroke-width=\"2\"/>\n        <text x=\"176\" y=\"58\" font-size=\"26\" text-anchor=\"middle\">🥚🥛</text>\n        <text x=\"176\" y=\"92\" font-size=\"14\" text-anchor=\"middle\" fill=\"#b5791f\" font-weight=\"bold\" font-family=\"SimSun,serif\">早餐：蛋+奶</text>\n        <text x=\"176\" y=\"116\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">优质蛋白打底</text>\n        <text x=\"176\" y=\"138\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">约 18 克</text>\n        <rect x=\"348\" y=\"22\" width=\"312\" height=\"132\" rx=\"14\" fill=\"#eafaf1\" stroke=\"#39b27c\" stroke-width=\"2\"/>\n        <text x=\"504\" y=\"58\" font-size=\"26\" text-anchor=\"middle\">🐟🍲🧈</text>\n        <text x=\"504\" y=\"92\" font-size=\"14\" text-anchor=\"middle\" fill=\"#1c7a4d\" font-weight=\"bold\" font-family=\"SimSun,serif\">午+晚：鱼+豆腐</text>\n        <text x=\"504\" y=\"116\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">荤素搭配互补</text>\n        <text x=\"504\" y=\"138\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">约 42 克</text>\n        <text x=\"340\" y=\"170\" font-size=\"13\" text-anchor=\"middle\" fill=\"#23303f\" font-family=\"SimSun,serif\">鱼禽蛋奶加豆制，一天轻松凑够 ≈60 克</text>\n      </svg>\n      <div class=\"case-cap\">动物蛋白 + 大豆制品，是优质蛋白的两条主路。</div>\n    </div>\n    <div class=\"mnemonic\">鱼禽蛋奶加豆制，优质蛋白排排坐；植物只数大豆强，谷菜搭配才齐活。<small>米面蔬菜也有蛋白，但属不完全，要搭配。</small></div>"},{"id":"pamt","title":"⚖️ 每天吃多少？","tag":"第7站 · 摄入量","narr":"每天吃多少蛋白质？中国居民膳食推荐：成年人大约每天每公斤体重吃1克蛋白质。比如你60公斤，一天约60克蛋白质（大概=1个蛋+1杯奶+1两肉+1块豆腐+主食里的）。运动员、孕妇、长身体的孩子、受伤生病的人，要吃得更多。但太多也伤肾，别盲目猛吃蛋白粉。","html":"<div class=\"card tip\"><b>推荐量：</b>成人约 <b>1 克 / 公斤体重 / 天</b>。60公斤成人 ≈ 60克/天（男性 RNI 65克、女性 55克）。</div>\n    <div class=\"card\"><b>谁要多吃：</b>运动员、孕妇、婴幼儿、青少年、术后/伤病恢复人群。</div>\n    <div class=\"mnemonic\">成人每天一克每公斤，六十公斤六十克宜；孕伤运动要多补，鱼禽蛋奶豆第一。<small>够就好，过多反伤肾，别迷信蛋白粉。</small></div>"},{"id":"feynman","title":"🗣️ 费曼自检","tag":"第12站 · 费曼法","narr":"学没学会，用费曼法检验：假装把知识讲给奶奶听。能讲明白，才是真懂。\n    这一站，请你用自己的话，回答下面四个问题，并给自己打星。讲得越像\"大白话\"，分越高。","html":"\n      <p class=\"lead\">费曼学习法：用自己的话讲出来，才是真懂。</p>\n      <ul class=\"feynman-list\">\n        <li>① 用一句话说清：注册营养师 和 公共营养师 有什么区别？</li>\n        <li>② 报出七大营养素的名字，并各举一个作用。</li>\n        <li>③ 举出钙、铁、碘 其中一个的作用，和哪类食物里多。</li>\n        <li>④ 蔬菜和水果能不能互相代替？每天大概吃多少？</li>\n        <li>⑤ 用一句话说清：人为什么会胖会瘦？能量从哪来、烧到哪去？</li>\n        <li>⑥ 脂类分成哪几类？它除了供能，还有什么重要作用？</li>\n      </ul>\n      <button class=\"btn\" onclick=\"openFeynman()\">✍️ 开始费曼自检（打分+存档）</button>\n    "},{"id":"xiaoming","title":"🙋 小明来提问","tag":"第13站 · 课堂互动","narr":"我的学生小明，总爱问些\"灵魂问题\"。这一站，换小明考你——看看你是不是真听明白了。","html":"\n      <div class=\"card ask\"><b>小明：</b>\"老师，注册和公共营养师到底差在哪啊？我老是分不清！还有蔬菜水果到底吃多少？\"</div>\n      <p>来，点下面按钮，和小明过招 👇</p>\n      <button class=\"btn\" onclick=\"openXiaoMing()\">🙋 进入小明问答（4题）</button>\n    "},{"id":"quiz","title":"🏆 终极测验","tag":"第14站 · 测验","narr":"最后一站，终极测验！把前面的口诀和知识点串起来考一考。答完看看自己能拿几颗星。","html":"\n      <p class=\"lead\">综合前面所有知识点，来一场小测验。</p>\n      <button class=\"btn\" onclick=\"openQuiz(6)\">🏆 开始终极测验（6题）</button>\n      <div class=\"mnemonic\">通关口诀合集（背熟这些！）<small>\n        注册有证真专业，公共入门好起点；<br>\n        医生开药治已病，营养师开菜单防未病；<br>\n        评估定制加临床，公共卫生也来帮；<br>\n        基础食物加人群，临床公卫四块拼；<br>\n        蛋脂碳维矿水纤，七兄弟把健康连；<br>\n        钙建骨，铁运氧，碘管甲，锌长壮；<br>\n        孕妇补叶酸，神经管不亏；<br>\n        人群不同吃法异，对号入座才适宜；<br>\n        红橙绿紫白，五色都来点；<br>\n        每天一斤菜，半斤果，深色蔬菜占一半；<br>\n        蛋白碳水各四卡，脂肪独吞九卡家；<br>\n        一大卡换四点一八，千焦千卡是一家；<br>\n        基础代谢是大头，活动消化也烧油；<br>\n        进多出少会囤肉，进少出多自然瘦；\n        甘油磷脂固醇三，能量膜材激素源；\n        脂溶 A D E K，油车送进身体里；\n        亚油亚麻两必需，身体不能自己齐；\n        鱼禽豆果好油多，肥肉奶油坏油躲；\n        反式脂肪酸最要躲，加工零食少碰我！\n      </small></div>\n    "}];
+const QUIZ = [{"q":"蛋白质常被比喻成什么？","opts":["身体的砖块，长肌肉、修伤口、造抗体","能量仓库，存能保暖","主燃料，脑子最优先","清道夫，通肠道"],"a":0,"e":"蛋白质像砖块，是构成肌肉、皮肤、抗体、酶的主要材料。"},{"q":"搭人体蛋白质的氨基酸大约有多少种？","opts":["约20种","约5种","约50种","只有2种"],"a":0,"e":"构成人体蛋白质的氨基酸约20种，再分成必需和非必需。"},{"q":"必需氨基酸（成人）有多少种？特点是？","opts":["9种，身体造不出、必须从食物来","0种，身体全能自己造","20种都要从食物来","只有1种"],"a":0,"e":"成人9种必需氨基酸，身体不能合成，必须从食物（优质蛋白）中获取。"},{"q":"下列属于\"优质蛋白\"（完全蛋白）的是？","opts":["鸡蛋、牛奶、鱼肉、大豆","只有白米饭","只有白糖","只有植物油"],"a":0,"e":"蛋奶鱼肉和大豆含全部9种必需氨基酸且比例好，是优质/完全蛋白。"},{"q":"谷类（米面）的蛋白质主要缺哪种必需氨基酸？","opts":["赖氨酸","一种都不缺","色氨酸","完全不含蛋白"],"a":0,"e":"谷类缺赖氨酸；玉米还缺色氨酸。所以要搭配豆类（互补）才齐全。"},{"q":"\"蛋白质互补作用\"是指？","opts":["两种不完全蛋白搭配，缺的补齐、利用率提高","蛋白质吃得越多越好","只吃一种食物最好","蛋白质不能搭配吃"],"a":0,"e":"米饭配豆腐：大豆补谷类缺的赖氨酸，谷类补大豆缺的蛋氨酸，合起来齐全。"},{"q":"成人蛋白质推荐摄入量大约是？","opts":["1克/公斤体重/天（60kg≈60克）","10克/天","0克/天","100克/天"],"a":0,"e":"成人约1g/kg·d；运动员、孕妇、伤病人要更多，但过多伤肾。"},{"q":"蛋白质每克能烧出多少能量？","opts":["4千卡","9千卡","0千卡","2千卡"],"a":0,"e":"蛋白质每克4千卡（和碳水一样），供能是它的\"兼职\"，正职是长身体。"}];
+const XM = [{"q":"小明：老师，蛋白质到底是啥呀？和脂肪有啥不一样？","opts":["蛋白质是身体的砖块，长肌肉、造抗体；脂肪是能量仓库每克9卡，作用不同","蛋白质就是脂肪换了个名","脂肪比蛋白质重要得多","蛋白质一点用没有"],"a":0,"e":"晓晓老师：蛋白质像砖块（长身体、造抗体），脂肪像能量仓库（每克9卡、护内脏）。都是必需营养，分工不同。"},{"q":"小明：我妈天天让我吃鸡蛋喝牛奶，说补蛋白，有必要吗？","opts":["有必要！蛋奶是优质蛋白，含全部必需氨基酸，长身体造抗体都离不开","没必要，白开水就行","只吃糖最补","蛋白吃多有毒"],"a":0,"e":"晓晓老师：每天一个蛋一杯奶很合适——蛋奶是优质蛋白，长身体、造抗体都靠它。"},{"q":"小明：那我只吃米饭不吃肉，蛋白质够吗？","opts":["不够\"全\"；米饭是不完全蛋白缺赖氨酸，得搭配豆腐/豆类或加点鱼禽蛋奶才算齐全","完全够，米饭蛋白最棒","肉有毒不能吃","米饭蛋白和肉一样好"],"a":0,"e":"晓晓老师：米饭是不完全蛋白，缺赖氨酸；配豆腐（互补）或加鱼禽蛋奶，蛋白质才优质又齐全。"}];
+let cur=0, sentIdx=0, playing=false, score=0, quizDone=new Set(), xmDone=new Set(), feynmanDone=false, curRate=1;
+let timerOn=true, timerH=null, synth=null, voice=null, speaking=false;
+
+const $ = s=>document.querySelector(s);
+const slideEl=$('#slide'), progEl=$('#prog'), scoreEl=$('#score'), subEl=$('#subtxt');
+
+function splitSentences(t){
+  if(!t) return [''];
+  const parts = t.split(/(?<=[。！？；])/).map(s=>s.trim()).filter(s=>s.length>0);
+  return parts.length ? parts : [t];
+}
+
+function render(){
+  const L=LESSONS[cur];
+  slideEl.innerHTML = `<h2>${L.title} <span class="tag">${L.tag}</span></h2>${L.html}`;
+  progEl.style.width = ((cur+1)/LESSONS.length*100)+'%';
+  // 导航
+  const nm=$('#navmap'); nm.innerHTML='';
+  LESSONS.forEach((x,i)=>{
+    const b=document.createElement('button');
+    b.textContent=(i===0?'🏠':(i+1)+'.')+x.title.replace(/^[^\s]+\s/,'');
+    if(i===cur)b.className='active'; else if(i<cur||quizDone.has(i))b.className='done';
+    b.onclick=()=>{ stopSpeak(); playing=false; cur=i; sentIdx=0; render(); };
+    nm.appendChild(b);
+  });
+  // 上一页/下一页
+  const pager=document.createElement('div'); pager.className='pager';
+  pager.innerHTML=`<button class="btn" ${cur===0?'disabled':''} onclick="go(-1)">← 上一页</button>
+    <button class="btn" style="background:var(--brand);color:#fff" ${cur===LESSONS.length-1?'disabled':''} onclick="go(1)">下一页 →</button>`;
+  slideEl.appendChild(pager);
+  updateSentBar();
+  updateSub();
+}
+function go(d){ stopSpeak(); playing=false; cur=Math.max(0,Math.min(LESSONS.length-1,cur+d)); sentIdx=0; render(); }
+
+/* —— 句子级播放（支持上一句/下一句/点击跳句 = 自由调播放位置） —— */
+function updateSub(){
+  const sents=splitSentences(LESSONS[cur].narr);
+  subEl.textContent = (sentIdx<sents.length)? sents[sentIdx] : LESSONS[cur].narr;
+  $('#posTxt').textContent='句 '+(sents.length?Math.min(sentIdx+1,sents.length):0)+'/'+sents.length;
+}
+function updateSentBar(){
+  const sents=splitSentences(LESSONS[cur].narr);
+  const bar=$('#sentbar'); bar.innerHTML='';
+  sents.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.className='seg'+(i===sentIdx?' on':'')+(i<sentIdx?' done':'');
+    b.title=s; b.textContent=(i+1);
+    b.onclick=()=>{ playing=false; speakSentence(i); };
+    bar.appendChild(b);
+  });
+  $('#posTxt').textContent='句 '+(sents.length?Math.min(sentIdx+1,sents.length):0)+'/'+sents.length;
+}
+function updatePlayUI(){
+  $('#playS').textContent = playing? '⏸ 暂停' : '▶ 播放';
+  $('#playBtn').textContent = playing? '⏸ 暂停本课' : '▶ 听晓晓老师讲（本课）';
+}
+function speakSentence(i){
+  const sents=splitSentences(LESSONS[cur].narr);
+  if(i<0||i>=sents.length) return;
+  sentIdx=i;
+  stopSpeak();
+  updateSub(); updateSentBar(); updatePlayUI();
+  if(!('speechSynthesis' in window)) return; // 无语音也能看字幕
+  const u=new SpeechSynthesisUtterance(sents[i]);
+  u.lang='zh-CN'; u.rate=curRate; u.pitch=1.0;
+  if(voice)u.voice=voice;
+  u.onstart=()=>{ speaking=true; };
+  u.onend=()=>{
+    speaking=false;
+    if(playing && sentIdx < sents.length-1){ sentIdx++; speakSentence(sentIdx); }
+    else if(playing && sentIdx===sents.length-1){ playing=false; updatePlayUI(); }
+  };
+  synth.speak(u);
+}
+function playLesson(){ stopSpeak(); sentIdx=0; playing=true; speakSentence(0); }
+
+/* —— 语音初始化 —— */
+function setupVoices(){
+  const sel=$('#voiceSel'); sel.innerHTML='';
+  const vs=speechSynthesis.getVoices();
+  const zh=vs.filter(v=>/zh|chinese|中文|国语|普通话/i.test(v.lang+v.name));
+  let best=null;
+  zh.forEach(v=>{ if(/xiao|晓|neural|神经|online|yun/i.test(v.name)) best=best||v; });
+  voice = best || zh[0] || vs[0] || null;
+  zh.concat(vs).forEach((v,i)=>{
+    if(i>40)return;
+    const o=document.createElement('option'); o.value=i; o.textContent=v.name+' ('+v.lang+')';
+    if(v===voice)o.selected=true; sel.appendChild(o);
+  });
+  sel.onchange=()=>{ voice = speechSynthesis.getVoices()[+sel.value]||voice; };
+}
+function stopSpeak(){ if(synth&&synth.speaking) synth.cancel(); speaking=false; }
+
+$('#playBtn').onclick=()=>{ if(playing){ playing=false; stopSpeak(); updatePlayUI(); } else { playLesson(); } };
+$('#playS').onclick=()=>{
+  if(playing){ playing=false; stopSpeak(); updatePlayUI(); }
+  else { playing=true; const sents=splitSentences(LESSONS[cur].narr);
+    if(sentIdx>=sents.length-1) sentIdx=0; speakSentence(sentIdx); }
+};
+$('#prevS').onclick=()=>{
+  playing=false;
+  const sents=splitSentences(LESSONS[cur].narr);
+  if(sentIdx>0) speakSentence(sentIdx-1);
+  else if(cur>0){ go(-1); const s2=splitSentences(LESSONS[cur].narr); speakSentence(s2.length-1); }
+  else speakSentence(0);
+};
+$('#nextS').onclick=()=>{
+  playing=false;
+  const sents=splitSentences(LESSONS[cur].narr);
+  if(sentIdx<sents.length-1) speakSentence(sentIdx+1);
+  else if(cur<LESSONS.length-1){ go(1); speakSentence(0); }
+  else updateSub();
+};
+$('#rollBtn').onclick=()=>openQuiz(1,true);
+$('#rateSel').onchange=()=>{ curRate=parseFloat($('#rateSel').value)||1; if(speaking) speakSentence(sentIdx); };
+$('#timerBtn').onclick=()=>{ timerOn=!timerOn; $('#timerBtn').classList.toggle('on',timerOn);
+  $('#timerBtn').textContent= timerOn?'⏰ 不定时提问':'⏰ 已关'; if(timerOn) startTimer(); else { clearTimeout(timerH); } };
+// 不定时：随机 35~70 秒，有时抽题、有时来一句费曼快速回忆
+function startTimer(){
+  clearTimeout(timerH); if(!timerOn)return;
+  const loop=()=>{
+    if(document.querySelector('.mask.show')){ schedule(); return; }
+    if(Math.random()<0.72) openQuiz(1,true); else openRecall();
+    schedule();
+  };
+  const schedule=()=>{ const t=35000+Math.random()*35000; timerH=setTimeout(loop,t); };
+  schedule();
+}
+
+/* —— 弹窗通用 —— */
+function showModal(html){ $('#modal').innerHTML=html; $('#mask').classList.add('show'); }
+function closeModal(){ $('#mask').classList.remove('show'); stopSpeak(); }
+$('#mask').onclick=(e)=>{ if(e.target.id==='mask') closeModal(); };
+
+function addScore(n,msg){ score+=n; scoreEl.textContent=score; toast(msg+' +'+n+'⭐'); }
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
+
+/* —— 测验 —— */
+function openQuiz(n, random){
+  const pool = random ? QUIZ : QUIZ.slice();
+  const picked=[]; const copy=pool.slice();
+  for(let i=0;i<n && copy.length;i++){ picked.push(copy.splice(Math.floor(Math.random()*copy.length),1)[0]); }
+  let idx=0, correct=0;
+  function step(){
+    if(idx>=picked.length){ finish(); return; }
+    const Q=picked[idx];
+    showModal(`<h3>📝 第 ${idx+1}/${picked.length} 题</h3>
+      <div class="who">晓晓老师提问时间</div>
+      <p><b>${Q.q}</b></p>
+      ${Q.opts.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join('')}
+      <div class="explain" id="ex"></div>
+      <div class="row"><button class="btn" onclick="closeModal()">关闭</button></div>`);
+    $('#modal').querySelectorAll('.opt').forEach(b=>{
+      b.onclick=()=>{
+        const i=+b.dataset.i; const opts=$('#modal').querySelectorAll('.opt');
+        opts.forEach(o=>o.disabled=true);
+        if(i===Q.a){ b.classList.add('correct'); correct++; }
+        else { b.classList.add('wrong'); opts[Q.a].classList.add('correct'); }
+        const ex=$('#ex'); ex.innerHTML='✅ 解析：'+Q.e; ex.classList.add('show');
+        if(i===Q.a) addScore(10,'答对啦');
+      };
+    });
+  }
+  function finish(){
+    const star = '⭐'.repeat(Math.max(1,Math.round(correct/picked.length*5)));
+    showModal(`<h3>🏁 测验结束</h3><div class="who">本次答对 ${correct}/${picked.length}</div>
+      <p style="font-size:22px">${star}</p>
+      <p>累计得分：<b>${score} ⭐</b></p>
+      <div class="row"><button class="btn" style="background:var(--brand);color:#fff" onclick="closeModal()">好的</button>
+      <button class="btn" onclick="openQuiz(${n},${random})">再来一次</button></div>`);
+    quizDone.add(cur); render();
+  }
+  step();
+}
+
+/* —— 复习站小测 —— */
+function openReview(){
+  const R = QUIZ.slice(0,9); // 旧知识点
+  const picked=[]; const copy=R.slice();
+  for(let i=0;i<3 && copy.length;i++){ picked.push(copy.splice(Math.floor(Math.random()*copy.length),1)[0]); }
+  let idx=0, correct=0;
+  function step(){
+    if(idx>=picked.length){ finish(); return; }
+    const Q=picked[idx];
+    showModal(`<h3>🔁 复习小测 第 ${idx+1}/3 题</h3>
+      <div class="who">唤醒旧口诀～</div>
+      <p><b>${Q.q}</b></p>
+      ${Q.opts.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join('')}
+      <div class="explain" id="ex"></div>
+      <div class="row"><button class="btn" onclick="closeModal()">关闭</button></div>`);
+    $('#modal').querySelectorAll('.opt').forEach(b=>{
+      b.onclick=()=>{
+        const i=+b.dataset.i; const opts=$('#modal').querySelectorAll('.opt');
+        opts.forEach(o=>o.disabled=true);
+        if(i===Q.a){ b.classList.add('correct'); correct++; }
+        else { b.classList.add('wrong'); opts[Q.a].classList.add('correct'); }
+        const ex=$('#ex'); ex.innerHTML='✅ 解析：'+Q.e; ex.classList.add('show');
+        if(i===Q.a) addScore(8,'复习答对');
+      };
+    });
+  }
+  function finish(){
+    showModal(`<h3>🔔 复习完成</h3><div class="who">答对 ${correct}/3</div>
+      <p>旧口诀唤醒成功！累计得分 <b>${score} ⭐</b></p>
+      <p class="lead">带着旧知识，继续往下学吧～</p>
+      <div class="row"><button class="btn" style="background:var(--brand);color:#fff" onclick="closeModal()">继续</button>
+      <button class="btn" onclick="closeModal()">去学新课 ➜</button></div>`);
+  }
+  step();
+}
+
+/* —— 费曼快速回忆（不定时弹出） —— */
+function openRecall(){
+  showModal(`<h3>🗣️ 晓晓老师突然考你</h3>
+    <div class="who">费曼记忆：用一句话讲给外行听</div>
+    <p><b>刚才讲的内容里，挑一个你最熟的，用一句话说说它是什么 / 有啥用？</b></p>
+    <textarea id="rc" placeholder="比如：膳食纤维像清道夫，帮肠道通便…"></textarea>
+    <div class="row"><button class="btn" style="background:var(--brand);color:#fff" onclick="saveRecall()">说完了，记一笔</button>
+    <button class="btn" onclick="closeModal()">先跳过</button></div>`);
+}
+function saveRecall(){
+  const v=$('#rc').value.trim();
+  if(!v){ toast('写一句再保存哦'); return; }
+  addScore(6,'费曼回忆+1');
+  try{ localStorage.setItem('xiaoxiao_recall_'+Date.now(), v); }catch(e){}
+  showModal(`<h3>✅ 已记下</h3><div class="who">累计得分 ${score} ⭐</div>
+    <pre style="white-space:pre-wrap;background:var(--soft);padding:12px;border-radius:10px;font-size:14px">${v}</pre>
+    <div class="row"><button class="btn" style="background:var(--brand);color:#fff" onclick="closeModal()">继续学习</button></div>`);
+}
+
+/* —— 费曼自检（完整版） —— */
+function openFeynman(){
+  showModal(`<h3>🗣️ 费曼自检</h3>
+    <div class="who">用自己的话讲给"奶奶"听，越像大白话越好</div>
+    <p>① 注册 vs 公共营养师 的区别：</p>
+    <textarea id="f1" placeholder="比如：注册要考很难的试，公共比较好考…"></textarea>
+    <p>② 七大营养素名字 + 各一个作用：</p>
+    <textarea id="f2" placeholder="比如：蛋白质像砖块长身体…"></textarea>
+    <p>③ 钙/铁/碘 其中一个的作用和食物：</p>
+    <textarea id="f3" placeholder="比如：钙像钢筋，牛奶里多…"></textarea>
+    <p>④ 蔬菜和水果能不能互相代替？每天吃多少？</p>
+    <textarea id="f4" placeholder="比如：不能替，菜一斤果半斤…"></textarea>
+    <p>给自己打分（讲得越像大白话越高）：</p>
+    <div class="stars" id="stars"><span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span></div>
+    <div class="row"><button class="btn" style="background:var(--brand);color:#fff" onclick="saveFeynman()">保存并评分</button>
+    <button class="btn" onclick="closeModal()">稍后</button></div>`);
+  let star=0;
+  $('#stars').querySelectorAll('span').forEach(s=>{
+    s.onclick=()=>{ star=+s.dataset.v;
+      $('#stars').querySelectorAll('span').forEach(x=>x.classList.toggle('lit',+x.dataset.v<=star)); };
+  });
+  window.__feynmanStar=()=>star;
+}
+function saveFeynman(){
+  const f1=$('#f1').value.trim(), f2=$('#f2').value.trim(), f3=$('#f3').value.trim(), f4=$('#f4').value.trim();
+  const star=window.__feynmanStar?window.__feynmanStar():0;
+  if(!f1||!f2||!f3||!f4){ toast('四道题都写一点再保存哦'); return; }
+  if(star>=3){ addScore(15,'费曼讲得不错'); } else { addScore(5,'完成自检，再练练'); }
+  feynmanDone=true;
+  const txt=`【费曼自检笔记】\n① ${f1}\n② ${f2}\n③ ${f3}\n④ ${f4}\n自评：${'★'.repeat(star)}`;
+  try{ localStorage.setItem('xiaoxiao_feynman_'+Date.now(), txt); }catch(e){}
+  showModal(`<h3>✅ 已保存</h3><div class="who">累计得分 ${score} ⭐</div>
+    <pre style="white-space:pre-wrap;background:var(--soft);padding:12px;border-radius:10px;font-size:13px">${txt}</pre>
+    <div class="row"><button class="btn" style="background:var(--brand);color:#fff" onclick="closeModal()">继续学习</button></div>`);
+  quizDone.add(cur); render();
+}
+
+/* —— 小明问答 —— */
+function openXiaoMing(){
+  let idx=0, correct=0;
+  function step(){
+    if(idx>=XM.length){ finish(); return; }
+    const Q=XM[idx];
+    showModal(`<h3>🙋 小明的问题 ${idx+1}/${XM.length}</h3>
+      <div class="who" style="color:var(--brand);font-weight:700">${Q.q}</div>
+      ${Q.opts.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join('')}
+      <div class="explain" id="ex"></div>
+      <div class="row"><button class="btn" onclick="closeModal()">关闭</button></div>`);
+    $('#modal').querySelectorAll('.opt').forEach(b=>{
+      b.onclick=()=>{
+        const i=+b.dataset.i; const opts=$('#modal').querySelectorAll('.opt');
+        opts.forEach(o=>o.disabled=true);
+        if(i===Q.a){ b.classList.add('correct'); correct++; }
+        else { b.classList.add('wrong'); opts[Q.a].classList.add('correct'); }
+        const ex=$('#ex'); ex.innerHTML='💡 '+Q.e; ex.classList.add('show');
+        if(i===Q.a) addScore(8,'小明服气了');
+        idx++;
+        setTimeout(()=>{ if(idx<XM.length) step(); else finish(); }, 900);
+      };
+    });
+  }
+  function finish(){
+    showModal(`<h3>🎉 小明被你说服啦</h3><div class="who">答对 ${correct}/${XM.length}</div>
+      <p>累计得分：<b>${score} ⭐</b></p>
+      <div class="row"><button class="btn" style="background:var(--brand);color:#fff" onclick="closeModal()">返回课堂</button>
+      <button class="btn" onclick="openXiaoMing()">再战</button></div>`);
+    xmDone.add(cur); render();
+  }
+  step();
+}
+
+/* ===================== 启动 ===================== */
+window.addEventListener('DOMContentLoaded',()=>{
+  if('speechSynthesis' in window){ synth=window.speechSynthesis; setupVoices();
+    speechSynthesis.onvoiceschanged=setupVoices; }
+  else { $('#playBtn').disabled=true; $('#playBtn').textContent='本浏览器不支持语音'; }
+  render();
+  startTimer();
+});
+
+</script>
+</body>
+</html>
