@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>注册营养师 · 晓晓老师课堂（碳水化合物·今日新课）</title>
+<style>
+  :root{
+    --bg:#f3f7fb; --card:#ffffff; --ink:#23303f; --sub:#5b6b7c;
+    --brand:#ff7a59; --brand2:#ffb347; --green:#39b27c; --blue:#3a86ff;
+    --purple:#8a5cff; --soft:#eef4fb; --line:#e2ebf3;
+  }
+  *{box-sizing:border-box;}
+  /* 字体：宋体（SimSun）小四号≈16px，清晰大字 */
+  html,body{margin:0;padding:0;
+    font-family:"宋体","SimSun","Songti SC","STSong","Microsoft YaHei",serif;
+    background:var(--bg);color:var(--ink);font-size:16px;}
+  /* 顶部条 */
+  .topbar{position:sticky;top:0;z-index:30;background:linear-gradient(135deg,#ff8a65,#ffb347);
+    color:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 10px rgba(0,0,0,.08);flex-wrap:wrap;}
+  .avatar{width:42px;height:42px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:22px;box-shadow:0 2px 6px rgba(0,0,0,.15);}
+  .titles{line-height:1.25;flex:1;min-width:160px;}
+  .titles b{font-size:17px;}
+  .titles small{opacity:.92;font-size:12.5px;}
+  .score-chip{background:rgba(255,255,255,.25);border-radius:20px;padding:5px 12px;font-weight:700;font-size:15px;}
+  .ctrls{display:flex;gap:6px;flex-wrap:wrap;}
+  .btn{border:none;border-radius:20px;padding:8px 13px;font-size:14px;cursor:pointer;font-weight:600;font-family:inherit;
+    background:#fff;color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.12);transition:.15s;}
+  .btn:hover{transform:translateY(-1px);}
+  .btn.ghost{background:rgba(255,255,255,.22);color:#fff;}
+  .btn.on{background:#fff;color:var(--green);}
+
+  /* 进度 */
+  .progress{height:5px;background:#ffe1d3;}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,#39b27c,#3a86ff);width:0;transition:.3s;}
+
+  /* 主体（底部留白给字幕控制条，字幕不挡讲解） */
+  .stage{max-width:840px;margin:0 auto;padding:18px 16px 200px;}
+  .navmap{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+  .navmap button{border:1px solid var(--line);background:#fff;border-radius:16px;padding:5px 11px;font-size:13px;cursor:pointer;color:var(--sub);font-family:inherit;}
+  .navmap button.active{background:var(--brand);color:#fff;border-color:var(--brand);}
+  .navmap button.done{background:var(--soft);color:var(--green);border-color:#bfe6d6;}
+
+  .slide{background:var(--card);border-radius:18px;padding:22px;box-shadow:0 6px 20px rgba(35,48,63,.06);animation:pop .35s ease;}
+  @keyframes pop{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  .slide h2{margin:0 0 4px;font-size:24px;display:flex;align-items:center;gap:8px;}
+  .slide .tag{font-size:13px;color:var(--brand);background:#fff0ea;padding:3px 9px;border-radius:10px;font-weight:700;}
+  .slide p{line-height:1.95;font-size:16px;color:var(--ink);}
+  .slide .lead{color:var(--sub);font-size:15px;margin-top:0;}
+
+  .card{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:12px 0;background:var(--soft);font-size:15.5px;line-height:1.8;}
+  .card.ask{background:#fff7ec;border-color:#ffe2b3;}
+  .card.tip{background:#eef9f3;border-color:#cdeede;}
+  .card b{color:var(--brand);}
+
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px;}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+  th{background:var(--soft);color:var(--sub);font-weight:700;}
+  td .ico{font-size:18px;margin-right:6px;}
+
+  .mnemonic{background:linear-gradient(135deg,#fff3ec,#fff8e8);border-left:5px solid var(--brand);
+    border-radius:12px;padding:13px 16px;margin:12px 0;font-size:17px;font-weight:700;color:#b5431f;line-height:1.7;}
+  .mnemonic small{display:block;font-weight:400;color:var(--sub);font-size:13.5px;margin-top:4px;}
+
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+  .chip{background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px 12px;font-size:14px;cursor:pointer;font-family:inherit;}
+
+  .pager{display:flex;justify-content:space-between;margin-top:16px;gap:10px;}
+  .pager .btn{padding:11px 18px;font-size:15px;}
+
+  /* 案例图 */
+  .case{border:1px dashed var(--brand);border-radius:14px;padding:12px 14px;margin:14px 0;background:#fffdfb;}
+  .case-title{font-weight:700;color:var(--brand);font-size:15px;margin-bottom:8px;}
+  .case svg{width:100%;height:auto;display:block;}
+  .case-cap{font-size:13.5px;color:var(--sub);margin-top:6px;}
+
+  /* 底部字幕 + 播放位置控制条 —— 固定底部，半透明，不遮挡讲解区 */
+  .subtitle{position:fixed;left:0;right:0;bottom:0;z-index:25;background:rgba(20,28,38,.86);
+    color:#fff;padding:10px 16px 12px;font-size:17px;line-height:1.6;backdrop-filter:blur(6px);
+    border-top:1px solid rgba(255,255,255,.15);min-height:104px;display:flex;flex-direction:column;gap:8px;}
+  .sub-row1{display:flex;align-items:center;gap:10px;}
+  .sub-row1 .spk{font-size:20px;}
+  .sub-row1 .txt{flex:1;}
+  .sub-row1 .cur{background:#ffd24d;color:#222;border-radius:4px;padding:0 2px;}
+  .sub-row1 .pos{font-size:13px;opacity:.8;white-space:nowrap;}
+  .sub-row2{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .sbtn{border:none;border-radius:18px;padding:7px 13px;font-size:14px;cursor:pointer;font-weight:600;font-family:inherit;
+    background:#fff;color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .sbtn:hover{transform:translateY(-1px);}
+  .sbtn.play{background:var(--green);color:#fff;}
+  .sentbar{display:flex;gap:4px;flex-wrap:wrap;flex:1;}
+  .seg{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;border-radius:8px;
+    min-width:26px;padding:4px 0;font-size:12px;cursor:pointer;font-family:inherit;text-align:center;}
+  .seg.done{background:rgba(57,178,124,.55);border-color:rgba(57,178,124,.8);}
+  .seg.on{background:#ffd24d;color:#222;border-color:#ffd24d;font-weight:700;}
+
+  /* 弹窗（测验 / 费曼 / 小明 / 复习） */
+  .mask{position:fixed;inset:0;background:rgba(20,28,38,.55);z-index:40;display:none;align-items:center;justify-content:center;padding:18px;}
+  .mask.show{display:flex;}
+  .modal{background:#fff;border-radius:18px;max-width:580px;width:100%;max-height:86vh;overflow:auto;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.3);font-family:inherit;}
+  .modal h3{margin:0 0 6px;font-size:21px;}
+  .modal .who{font-size:13.5px;color:var(--sub);margin-bottom:12px;}
+  .opt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;
+    padding:12px 14px;margin:8px 0;font-size:15.5px;cursor:pointer;transition:.15s;font-family:inherit;}
+  .opt:hover{border-color:var(--brand);}
+  .opt.correct{background:#eafaf1;border-color:var(--green);color:#1c7a4d;}
+  .opt.wrong{background:#fdeaea;border-color:#e06b6b;color:#b33232;}
+  .opt:disabled{cursor:default;}
+  .explain{background:var(--soft);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14.5px;line-height:1.8;display:none;}
+  .explain.show{display:block;}
+  .modal .row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+  textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:12px;padding:10px;font-size:14.5px;font-family:inherit;resize:vertical;}
+  .stars{font-size:26px;letter-spacing:4px;cursor:pointer;}
+  .stars span{color:#d9d9d9;}
+  .stars span.lit{color:#ffb347;}
+
+  .badge{display:inline-block;background:#fff0ea;color:var(--brand);border-radius:12px;padding:4px 10px;font-size:12.5px;margin:3px;font-weight:700;}
+  .toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#23303f;color:#fff;
+    padding:10px 18px;border-radius:24px;z-index:60;font-size:14px;opacity:0;transition:.3s;pointer-events:none;}
+  .toast.show{opacity:1;}
+  .feynman-list li{margin:8px 0;line-height:1.8;font-size:15.5px;}
+  .ok{color:var(--green);font-weight:700;}
+  .foot{text-align:center;color:var(--sub);font-size:12.5px;margin:6px 0 0;}
+</style>
+</head>
+
+</head>
+<body>
+
+<div class="topbar">
+  <div class="avatar">👩‍🏫</div>
+  <div class="titles"><b>注册营养师 · 晓晓老师课堂（碳水化合物·考点7-9）</b><br><small>今日新课：碳水（是什么/分类/消化/升糖GI/来源/吃多少）</small></div>
+  <div class="score-chip">⭐ <span id="score">0</span></div>
+  <div class="ctrls">
+    <button class="btn" id="playBtn">▶ 听晓晓老师讲（本课）</button>
+    <select class="btn" id="voiceSel" title="选择晓晓老师的声音"></select>
+    <select class="btn" id="rateSel" title="语速（可调速）"><option value="0.8">0.8x</option><option value="1" selected>1.0x</option><option value="1.2">1.2x</option><option value="1.4">1.4x</option></select>
+    <button class="btn ghost" id="rollBtn" title="随机抽一道题考考你">🎲 考考我</button>
+    <button class="btn ghost on" id="timerBtn" title="不定时自动抽题/提问（随机间隔）">⏰ 不定时提问</button>
+  </div>
+</div>
+<div class="progress"><i id="prog"></i></div>
+
+<div class="stage">
+  <div class="navmap" id="navmap"></div>
+  <div class="slide" id="slide"></div>
+  <div class="foot">提示：电脑 Edge / Chrome 打开，点「听晓晓老师讲」可听神经网络语音；底部字幕不挡讲解，可用「上一句/下一句」和句子进度条自由调播放位置。</div>
+</div>
+
+<!-- 底部字幕 + 播放位置控制 -->
+<div class="subtitle" id="subbar">
+  <div class="sub-row1">
+    <span class="spk">🔊</span>
+    <span class="txt" id="subtxt">点上方「听晓晓老师讲（本课）」，字幕会同步出现在这里～</span>
+    <span class="pos" id="posTxt">句 0/0</span>
+  </div>
+  <div class="sub-row2">
+    <button class="sbtn" id="prevS">⏮ 上一句</button>
+    <button class="sbtn play" id="playS">▶ 播放</button>
+    <button class="sbtn" id="nextS">下一句 ⏭</button>
+    <div class="sentbar" id="sentbar"></div>
+  </div>
+</div>
+
+<!-- 弹窗 -->
+<div class="mask" id="mask">
+  <div class="modal" id="modal"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const LESSONS = [{"id":"open","title":"👋 开场白","tag":"第0站 · 地图","narr":"同学们好，我是晓晓老师。前几课咱们学完了蛋白质（砖块）和脂类（油家族），还搞懂了能量（汽油）。今天这道新菜，是身体最\"便宜、最主用\"的燃料——碳水化合物（考点7-9），也就是大家说的\"主食、糖、淀粉\"。它是大脑的首选汽油，每克4千卡。跟着晓晓老师：先复习口诀，搞懂碳水是啥、分几类、怎么被消化、升糖快慢怎么看（GI）、从哪来、每天吃多少，最后费曼自检、小明提问、来场测验。出发！","html":"<p class=\"lead\">今天学身体的\"主燃料\" ⛽——碳水化合物（考点7-9）</p>\n    <div class=\"card ask\"><b>晓晓老师：</b>先唤醒旧口诀，再学碳水这道\"主食菜\"。哪怕初中生也能听懂、记住、讲给别人听。</div>\n    <div class=\"mnemonic\">学习路线：复习口诀 → 是什么 → 分类 → 消化 → 升糖GI → 来源 → 吃多少 → 费曼自检 → 小明互动 → 终极测验<small>跟着导航条走，每一站都有口诀和提问。</small></div>"},{"id":"review","title":"🔁 复习站（唤醒旧课）","tag":"复习 · 唤醒口诀","narr":"先复习！蛋脂碳维矿水纤，七兄弟把健康连——今天的主角碳水（碳）排第三，是身体的主燃料。蛋白碳水各4卡、脂肪9卡——碳水最便宜、最主用。甘油磷脂固醇三兄弟是昨天的脂类，脂肪每克9千卡。今天加碳水化合物这道菜：看看它除了供能，还怎么被消化、升糖快慢怎么分。点下面按钮先考考自己。","html":"<p class=\"lead\">唤醒旧口诀，再学碳水 🔔</p>\n    <div class=\"mnemonic\">蛋脂碳维矿水纤，七兄弟把健康连！<small>蛋=蛋白(砖块)，脂=脂类，碳=碳水(主燃料)。</small></div>\n    <div class=\"mnemonic\">蛋白碳水各四卡，脂肪独吞九卡家。<small>能量站：每克产能蛋白4、碳水4、脂肪9。</small></div>\n    <div class=\"mnemonic\">甘油磷脂固醇三，能量膜材激素源。<small>脂类三兄弟，先唤醒。</small></div>\n    <button class=\"btn\" onclick=\"openReview()\">📋 旧口诀小测（3问）</button>"},{"id":"cwhat","title":"⛽ 碳水是身体的\"主燃料\"","tag":"第1站 · 是什么","narr":"碳水化合物，是身体最\"便宜、最主用\"的燃料，也就是主食、米饭、馒头、糖、淀粉这些。它和蛋白质、脂类一样，是三大产能营养素之一，每克能烧出4千卡（和蛋白质一样，比脂肪9千卡少）。它最特别的地方：葡萄糖是大脑和红细胞唯一最爱用的燃料——你不吃饭脑子就转不动、手脚也没劲。一句话：碳水是身体的\"汽油\"，还是最省钱的那种。","html":"<p>一句话记住它的身份：<b>身体的主燃料 + 最经济能量 + 大脑首选汽油</b>。</p>\n    <div class=\"card tip\"><b>核心：</b>米面薯类糖淀粉都属碳水；它给身体和大脑供能，是最主要、最便宜的能量来源。每克产能 <b>4 千卡</b>。</div>\n    <div class=\"mnemonic\">碳水主燃料最省钱，大脑首选葡萄糖；每克四卡供能快，不吃主食脑发蔫。<small>产能：碳水4 = 蛋白4 < 脂肪9（千卡/克）。</small></div>"},{"id":"cclass","title":"🍬 碳水分成几类？","tag":"第2站 · 分类","narr":"碳水按\"糖分子串多长\"分四类：①单糖——一块糖，最小的，像葡萄糖、果糖（水果里多）、半乳糖；②双糖——两块拼，像蔗糖（白糖=葡萄糖+果糖）、乳糖（奶里，葡萄糖+半乳糖）、麦芽糖（两块葡萄糖）；③寡糖——几块串，像低聚果糖；④多糖——一长串，像淀粉（米面里）、糖原（存在你肝脏肌肉里）、膳食纤维（蔬菜水果豆里的\"筋\"，人体消化不了）。记住：越往后串越长，单糖最甜最快吸收，多糖最顶饱。","html":"<div class=\"case\">\n      <div class=\"case-title\">🍬 案例图：碳水分四类（糖分子从一块到一长串）</div>\n      <svg viewBox=\"0 0 680 200\" role=\"img\" aria-label=\"碳水分四类\">\n        <rect x=\"14\" y=\"22\" width=\"156\" height=\"156\" rx=\"14\" fill=\"#fff3f0\" stroke=\"#ff7a59\" stroke-width=\"2\"/>\n        <text x=\"92\" y=\"64\" font-size=\"30\" text-anchor=\"middle\">🍬</text>\n        <text x=\"92\" y=\"100\" font-size=\"14.5\" text-anchor=\"middle\" fill=\"#b5431f\" font-weight=\"bold\" font-family=\"SimSun,serif\">单糖(1块)</text>\n        <text x=\"92\" y=\"124\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">葡萄糖·果糖</text>\n        <text x=\"92\" y=\"146\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">最甜最快吸</text>\n        <rect x=\"178\" y=\"22\" width=\"156\" height=\"156\" rx=\"14\" fill=\"#fff8e6\" stroke=\"#ffb347\" stroke-width=\"2\"/>\n        <text x=\"256\" y=\"64\" font-size=\"30\" text-anchor=\"middle\">🧊🧊</text>\n        <text x=\"256\" y=\"100\" font-size=\"14.5\" text-anchor=\"middle\" fill=\"#9a6310\" font-weight=\"bold\" font-family=\"SimSun,serif\">双糖(2块)</text>\n        <text x=\"256\" y=\"124\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">蔗糖·乳糖·麦芽糖</text>\n        <text x=\"256\" y=\"146\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">白糖是蔗糖</text>\n        <rect x=\"342\" y=\"22\" width=\"156\" height=\"156\" rx=\"14\" fill=\"#eafaf1\" stroke=\"#39b27c\" stroke-width=\"2\"/>\n        <text x=\"420\" y=\"64\" font-size=\"30\" text-anchor=\"middle\">🍚</text>\n        <text x=\"420\" y=\"100\" font-size=\"14.5\" text-anchor=\"middle\" fill=\"#1c7a4d\" font-weight=\"bold\" font-family=\"SimSun,serif\">多糖(一长串)</text>\n        <text x=\"420\" y=\"124\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">淀粉·糖原·纤维</text>\n        <text x=\"420\" y=\"146\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">米面主力最顶饱</text>\n        <rect x=\"506\" y=\"22\" width=\"160\" height=\"156\" rx=\"14\" fill=\"#eaf1fb\" stroke=\"#3a86ff\" stroke-width=\"2\"/>\n        <text x=\"586\" y=\"64\" font-size=\"30\" text-anchor=\"middle\">🌿</text>\n        <text x=\"586\" y=\"100\" font-size=\"14.5\" text-anchor=\"middle\" fill=\"#1f5bb5\" font-weight=\"bold\" font-family=\"SimSun,serif\">膳食纤维</text>\n        <text x=\"586\" y=\"124\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">多糖但消化不了</text>\n        <text x=\"586\" y=\"146\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">通肠道不升糖</text>\n      </svg>\n      <div class=\"case-cap\">单糖最甜最快；多糖(淀粉)最顶饱；膳食纤维虽是碳水却不升糖、不供能。</div>\n    </div>\n    <div class=\"mnemonic\">单糖一块双糖俩，多糖长串一大把；淀粉糖原和纤维，消化快慢差很大。<small>蔗糖=葡萄糖+果糖；乳糖=葡萄糖+半乳糖；麦芽糖=葡萄糖+葡萄糖。</small></div>"},{"id":"cdig","title":"🔬 碳水怎么被消化？","tag":"第3站 · 消化","narr":"碳水从你嘴里就开始消化了！米饭馒头多嚼几下会发甜，因为嘴里的唾液淀粉酶把淀粉拆成了麦芽糖。真正的大工程在小肠：胰淀粉酶把淀粉彻底拆成最小的葡萄糖，然后小肠壁把葡萄糖吸进血液，送到全身当燃料。所以——细嚼慢咽不只是礼貌，还能让淀粉早点变甜、减轻肠胃负担。","html":"<div class=\"chips\">\n      <span class=\"chip\">👄 口腔：唾液淀粉酶，淀粉→麦芽糖(越嚼越甜)</span>\n      <span class=\"chip\">🔥 小肠：胰淀粉酶，拆成葡萄糖</span>\n      <span class=\"chip\">🩸 吸收入血：葡萄糖→全身当燃料</span>\n    </div>\n    <div class=\"card tip\"><b>小实验：</b>含一口白米饭不咽，慢慢嚼，30秒后是不是变甜了？那就是淀粉正在变成糖！</div>\n    <div class=\"mnemonic\">嘴里唾液先开工，越嚼越甜淀粉松；小肠胰酶拆葡萄糖，吸血全身当燃料。<small>消化从口腔开始，细嚼慢咽好处多。</small></div>"},{"id":"cgi","title":"🚦 升糖快慢看 GI（血糖生成指数）","tag":"第4站 · 升糖GI","narr":"同样都是碳水，吃进去后血糖升得快不快，差很多。这就用\"血糖生成指数 GI\"来衡量：GI 高（大于70）升糖快——像白米饭、白馒头、白糖，吃完血糖\"嗖\"地上去又很快掉下来，容易饿；GI 低（小于55）升糖慢——像燕麦、全麦、豆类、大多数蔬菜，血糖稳稳的，顶饱又不闹腾。还有个 GL（血糖负荷）= GI × 吃进去的碳水克数，看\"总量\"更准。口诀：高GI升糖快，白米白面白糖来；低GI升糖慢，全麦燕麦豆蔬菜。","html":"<div class=\"case\">\n      <div class=\"case-title\">🚦 案例图：GI 红绿灯（升糖快慢对照）</div>\n      <svg viewBox=\"0 0 680 190\" role=\"img\" aria-label=\"GI红绿灯\">\n        <rect x=\"16\" y=\"22\" width=\"208\" height=\"146\" rx=\"14\" fill=\"#ffe3e0\" stroke=\"#ff5a5a\" stroke-width=\"2\"/>\n        <circle cx=\"64\" cy=\"62\" r=\"15\" fill=\"#ff5a5a\"/><text x=\"64\" y=\"68\" font-size=\"14\" text-anchor=\"middle\" fill=\"#fff\" font-family=\"SimSun,serif\">高</text>\n        <text x=\"120\" y=\"60\" font-size=\"15\" text-anchor=\"middle\" fill=\"#b33232\" font-weight=\"bold\" font-family=\"SimSun,serif\">高GI(&gt;70)</text>\n        <text x=\"120\" y=\"92\" font-size=\"12.5\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">升糖快·易饿</text>\n        <text x=\"120\" y=\"116\" font-size=\"12.5\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">白米饭·白馒头·白糖</text>\n        <rect x=\"236\" y=\"22\" width=\"208\" height=\"146\" rx=\"14\" fill=\"#fff6e0\" stroke=\"#ffb300\" stroke-width=\"2\"/>\n        <circle cx=\"284\" cy=\"62\" r=\"15\" fill=\"#ffb300\"/><text x=\"284\" y=\"68\" font-size=\"14\" text-anchor=\"middle\" fill=\"#fff\" font-family=\"SimSun,serif\">中</text>\n        <text x=\"340\" y=\"60\" font-size=\"15\" text-anchor=\"middle\" fill=\"#9a6310\" font-weight=\"bold\" font-family=\"SimSun,serif\">中GI(55-70)</text>\n        <text x=\"340\" y=\"92\" font-size=\"12.5\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">升糖中等</text>\n        <text x=\"340\" y=\"116\" font-size=\"12.5\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">馒头·小米·南瓜</text>\n        <rect x=\"456\" y=\"22\" width=\"208\" height=\"146\" rx=\"14\" fill=\"#e6f8ea\" stroke=\"#2ecc71\" stroke-width=\"2\"/>\n        <circle cx=\"504\" cy=\"62\" r=\"15\" fill=\"#2ecc71\"/><text x=\"504\" y=\"68\" font-size=\"14\" text-anchor=\"middle\" fill=\"#fff\" font-family=\"SimSun,serif\">低</text>\n        <text x=\"560\" y=\"60\" font-size=\"15\" text-anchor=\"middle\" fill=\"#1c7a4d\" font-weight=\"bold\" font-family=\"SimSun,serif\">低GI(&lt;55)</text>\n        <text x=\"560\" y=\"92\" font-size=\"12.5\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">升糖慢·顶饱</text>\n        <text x=\"560\" y=\"116\" font-size=\"12.5\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">燕麦·全麦·豆类·蔬菜</text>\n      </svg>\n      <div class=\"case-cap\">白米饭换成燕麦/杂粮，血糖更稳、更顶饱。</div>\n    </div>\n    <div class=\"mnemonic\">高GI升糖快，白米白面白糖来；低GI升糖慢，全麦燕麦豆蔬菜。<small>GI&gt;70高、55-70中、&lt;55低；GL=GI×碳水克数看总量。</small></div>"},{"id":"csrc","title":"🍚 碳水从哪来？","tag":"第5站 · 来源","narr":"碳水主要来自\"主食\"三大家：①谷类——米、面、玉米，是碳水绝对主力；②薯类——土豆、红薯、山药，也能当饭吃；③杂豆——红豆、绿豆、扁豆（注意是当主食的干豆，不是蔬菜豆角）。另外，水果里有果糖（单糖），白糖红糖是蔗糖（双糖），它们也是碳水，但甜度高、容易吃多糖又少营养，别当饭吃、要适度。口诀：谷类薯类加杂豆，主食主力碳水厚；水果白糖单糖多，别当饭吃要适度。","html":"<div class=\"case\">\n      <div class=\"case-title\">🍽️ 案例图：小明一天的主食餐盘（≈250克主食）</div>\n      <svg viewBox=\"0 0 680 180\" role=\"img\" aria-label=\"小明一天主食餐盘\">\n        <rect x=\"20\" y=\"22\" width=\"312\" height=\"134\" rx=\"14\" fill=\"#fff7ec\" stroke=\"#ffb347\" stroke-width=\"2\"/>\n        <text x=\"176\" y=\"60\" font-size=\"26\" text-anchor=\"middle\">🍚🌽</text>\n        <text x=\"176\" y=\"94\" font-size=\"14\" text-anchor=\"middle\" fill=\"#b5791f\" font-weight=\"bold\" font-family=\"SimSun,serif\">谷类 + 薯类(主食主力)</text>\n        <text x=\"176\" y=\"118\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">米面玉米 + 土豆红薯</text>\n        <text x=\"176\" y=\"142\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">约 200-300 克</text>\n        <rect x=\"348\" y=\"22\" width=\"312\" height=\"134\" rx=\"14\" fill=\"#eafaf1\" stroke=\"#39b27c\" stroke-width=\"2\"/>\n        <text x=\"504\" y=\"60\" font-size=\"26\" text-anchor=\"middle\">🫘🥔</text>\n        <text x=\"504\" y=\"94\" font-size=\"14\" text-anchor=\"middle\" fill=\"#1c7a4d\" font-weight=\"bold\" font-family=\"SimSun,serif\">杂豆 + 粗细搭配</text>\n        <text x=\"504\" y=\"118\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">红豆绿豆 + 全谷杂粮</text>\n        <text x=\"504\" y=\"142\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5b6b7c\" font-family=\"SimSun,serif\">全谷杂豆 50-150 克</text>\n        <text x=\"340\" y=\"172\" font-size=\"13\" text-anchor=\"middle\" fill=\"#23303f\" font-family=\"SimSun,serif\">谷薯杂豆当主食，水果白糖单糖多要少</text>\n      </svg>\n      <div class=\"case-cap\">中国胃的碳水主力是米面薯豆，水果和糖只是\"甜味配角\"。</div>\n    </div>\n    <div class=\"mnemonic\">谷类薯类加杂豆，主食主力碳水厚；水果白糖单糖多，别当饭吃要适度。<small>杂豆=红豆绿豆(当主食的干豆)，不是蔬菜豆角。</small></div>"},{"id":"camt","title":"⚖️ 每天吃多少？","tag":"第6站 · 摄入量","narr":"每天吃多少碳水？中国居民膳食指南（2022）建议：谷类每天吃 200～300 克（其中全谷物和杂豆 50～150 克），薯类 50～100 克；从能量看，碳水化合物应占总能量的 50%～65%——它依然是最主要的能量来源。还有一位\"隐形功臣\"膳食纤维（也是碳水但不消化），每天推荐吃够 25～30 克，能通肠道、控血糖血脂。口诀：谷类两三两，薯类一两许；全谷杂豆搭，纤维二十五。别走极端——完全不吃主食，大脑会缺葡萄糖、人会没劲甚至生酮，不可取。","html":"<div class=\"card tip\"><b>推荐量（中国居民膳食指南 2022）：</b>谷类 200–300 克/天（全谷杂豆 50–150 克）+ 薯类 50–100 克；碳水供能占 <b>50%–65%</b>；膳食纤维 <b>25–30 克/天</b>。</div>\n    <div class=\"card\"><b>走极端不行：</b>完全不吃主食 → 大脑缺葡萄糖、没劲、可能生酮；吃太多精制糖 → 胖、血糖乱。粗细搭配、控糖最稳。</div>\n    <div class=\"mnemonic\">谷类两三两，薯类一两许；全谷杂豆搭，纤维二十五。<small>碳水供能过半(50-65%)最主用；纤维通肠控糖脂。</small></div>"},{"id":"feynman","title":"🗣️ 费曼自检","tag":"第12站 · 费曼法","narr":"学没学会，用费曼法检验：假装把知识讲给奶奶听。能讲明白，才是真懂。\n    这一站，请你用自己的话，回答下面四个问题，并给自己打星。讲得越像\"大白话\"，分越高。","html":"\n      <p class=\"lead\">费曼学习法：用自己的话讲出来，才是真懂。</p>\n      <ul class=\"feynman-list\">\n        <li>① 用一句话说清：注册营养师 和 公共营养师 有什么区别？</li>\n        <li>② 报出七大营养素的名字，并各举一个作用。</li>\n        <li>③ 举出钙、铁、碘 其中一个的作用，和哪类食物里多。</li>\n        <li>④ 蔬菜和水果能不能互相代替？每天大概吃多少？</li>\n        <li>⑤ 用一句话说清：人为什么会胖会瘦？能量从哪来、烧到哪去？</li>\n        <li>⑥ 脂类分成哪几类？它除了供能，还有什么重要作用？</li>\n      </ul>\n      <button class=\"btn\" onclick=\"openFeynman()\">✍️ 开始费曼自检（打分+存档）</button>\n    "},{"id":"xiaoming","title":"🙋 小明来提问","tag":"第13站 · 课堂互动","narr":"我的学生小明，总爱问些\"灵魂问题\"。这一站，换小明考你——看看你是不是真听明白了。","html":"\n      <div class=\"card ask\"><b>小明：</b>\"老师，注册和公共营养师到底差在哪啊？我老是分不清！还有蔬菜水果到底吃多少？\"</div>\n      <p>来，点下面按钮，和小明过招 👇</p>\n      <button class=\"btn\" onclick=\"openXiaoMing()\">🙋 进入小明问答（4题）</button>\n    "},{"id":"quiz","title":"🏆 终极测验","tag":"第14站 · 测验","narr":"最后一站，终极测验！把前面的口诀和知识点串起来考一考。答完看看自己能拿几颗星。","html":"\n      <p class=\"lead\">综合前面所有知识点，来一场小测验。</p>\n      <button class=\"btn\" onclick=\"openQuiz(6)\">🏆 开始终极测验（6题）</button>\n      <div class=\"mnemonic\">通关口诀合集（背熟这些！）<small>\n        注册有证真专业，公共入门好起点；<br>\n        医生开药治已病，营养师开菜单防未病；<br>\n        评估定制加临床，公共卫生也来帮；<br>\n        基础食物加人群，临床公卫四块拼；<br>\n        蛋脂碳维矿水纤，七兄弟把健康连；<br>\n        钙建骨，铁运氧，碘管甲，锌长壮；<br>\n        孕妇补叶酸，神经管不亏；<br>\n        人群不同吃法异，对号入座才适宜；<br>\n        红橙绿紫白，五色都来点；<br>\n        每天一斤菜，半斤果，深色蔬菜占一半；<br>\n        蛋白碳水各四卡，脂肪独吞九卡家；<br>\n        一大卡换四点一八，千焦千卡是一家；<br>\n        基础代谢是大头，活动消化也烧油；<br>\n        进多出少会囤肉，进少出多自然瘦；\n        甘油磷脂固醇三，能量膜材激素源；\n        脂溶 A D E K，油车送进身体里；\n        亚油亚麻两必需，身体不能自己齐；\n        鱼禽豆果好油多，肥肉奶油坏油躲；\n        反式脂肪酸最要躲，加工零食少碰我！\n      </small></div>\n    "}];
+const QUIZ = [{"q":"碳水化合物每克能烧出多少能量？","opts":["4千卡","9千卡","0千卡","2千卡"],"a":0,"e":"碳水每克4千卡（和蛋白一样）；脂肪才9千卡。它是最经济的主燃料。"},{"q":"葡萄糖是身体里哪部分的\"首选燃料\"？","opts":["大脑和红细胞","头发","指甲","骨头"],"a":0,"e":"大脑和红细胞几乎只靠葡萄糖供能，所以不吃主食脑子会发蔫。"},{"q":"下列属于\"单糖\"的是？","opts":["葡萄糖","蔗糖","淀粉","膳食纤维"],"a":0,"e":"单糖是一块糖：葡萄糖、果糖、半乳糖；蔗糖是双糖、淀粉是多糖。"},{"q":"白糖（蔗糖）由哪两种单糖组成？","opts":["葡萄糖 + 果糖","葡萄糖 + 葡萄糖","果糖 + 半乳糖","淀粉 + 水"],"a":0,"e":"蔗糖=葡萄糖+果糖；乳糖=葡萄糖+半乳糖；麦芽糖=葡萄糖+葡萄糖。"},{"q":"血糖生成指数 GI 高的食物（>70）特点是？","opts":["升糖快、易饿，如白米饭白馒头白糖","升糖慢、顶饱，如燕麦豆类","完全不升糖","只长肌肉"],"a":0,"e":"高GI(>70)升糖快；低GI(<55)升糖慢顶饱（燕麦、全麦、豆类、多数蔬菜）。"},{"q":"中国居民膳食指南推荐碳水化合物供能占总能量的？","opts":["50%–65%","10%–15%","80%–90%","0%"],"a":0,"e":"碳水供能应占50–65%，是最主要、最经济的能量来源（蛋白10-15%、脂肪20-30%）。"},{"q":"膳食纤维虽然是碳水，但它？","opts":["人体消化不了，不升糖不供能，但通肠道控糖脂","和白糖一样甜","每克9千卡","只存在于肉里"],"a":0,"e":"膳食纤维是多糖但人体不消化，不升糖不供能，能促蠕动、控血糖血脂；每天25-30克。"},{"q":"谷类、薯类、杂豆主要给身体提供？","opts":["碳水化合物（主食主力）","只有维生素","只有蛋白质","只有脂肪"],"a":0,"e":"米面薯豆是中国人碳水绝对主力；水果和糖是单糖多的\"甜味配角\"，别当饭吃。"},{"q":"关于\"不吃主食减肥\"，正确的是？","opts":["不可取：大脑缺葡萄糖会没劲，可能生酮","完全正确，碳水有毒","主食一点用没有","只吃肉最健康"],"a":0,"e":"完全戒主食不可取——大脑首选葡萄糖；应控量、选低GI、粗细搭配。"}];
+const XM = [{"q":"小明：老师，碳水是不是就是糖？和我吃的米饭有啥关系？","opts":["碳水是个\"大家族\"，米饭里的淀粉是多糖，消化后变葡萄糖；白糖也是碳水（蔗糖），都属于这一类","碳水就是白糖，和米饭没关系","米饭不是碳水","碳水有毒不能吃"],"a":0,"e":"晓晓老师：碳水是大类。米饭里的淀粉是多糖，嚼久了变甜、到小肠拆成葡萄糖；白糖是蔗糖（双糖）——都算碳水。"},{"q":"小明：那我吃白米饭好，还是吃燕麦粥好？","opts":["燕麦更好：低GI升糖慢、更顶饱更稳；白米饭高GI升得快易饿，粗细搭配最合适","白米饭永远最好","燕麦有毒","两者完全一样"],"a":0,"e":"晓晓老师：燕麦低GI(<55)升糖慢、稳、顶饱；白米饭高GI升得快。把部分白米换成燕麦杂粮就更棒。"},{"q":"小明：听说碳水吃多会长胖，那我把米饭全戒了行不行？","opts":["不行！碳水是最经济的主能量，大脑首选葡萄糖；全戒会没劲、可能生酮。要控量、选低GI、粗细搭配","完全行，戒得越干净越健康","主食一点用没有","只吃糖最补"],"a":0,"e":"晓晓老师：全戒主食不可取。大脑要靠葡萄糖，完全不吃会没劲甚至生酮。聪明做法是控量+低GI+粗细搭。"}];
+let cur=0, sentIdx=0, playing=false, score=0, quizDone=new Set(), xmDone=new Set(), feynmanDone=false, curRate=1;
+let timerOn=true, timerH=null, synth=null, voice=null, speaking=false;
+
+const $ = s=>document.querySelector(s);
+const slideEl=$('#slide'), progEl=$('#prog'), scoreEl=$('#score'), subEl=$('#subtxt');
+
+function splitSentences(t){
+  if(!t) return [''];
+  const parts = t.split(/(?<=[。！？；])/).map(s=>s.trim()).filter(s=>s.length>0);
+  return parts.length ? parts : [t];
+}
+
+function render(){
+  const L=LESSONS[cur];
+  slideEl.innerHTML = `<h2>${L.title} <span class="tag">${L.tag}</span></h2>${L.html}`;
+  progEl.style.width = ((cur+1)/LESSONS.length*100)+'%';
+  // 导航
+  const nm=$('#navmap'); nm.innerHTML='';
+  LESSONS.forEach((x,i)=>{
+    const b=document.createElement('button');
+    b.textContent=(i===0?'🏠':(i+1)+'.')+x.title.replace(/^[^\s]+\s/,'');
+    if(i===cur)b.className='active'; else if(i<cur||quizDone.has(i))b.className='done';
+    b.onclick=()=>{ stopSpeak(); playing=false; cur=i; sentIdx=0; render(); };
+    nm.appendChild(b);
+  });
+  // 上一页/下一页
+  const pager=document.createElement('div'); pager.className='pager';
+  pager.innerHTML=`<button class="btn" ${cur===0?'disabled':''} onclick="go(-1)">← 上一页</button>
+    <button class="btn" style="background:var(--brand);color:#fff" ${cur===LESSONS.length-1?'disabled':''} onclick="go(1)">下一页 →</button>`;
+  slideEl.appendChild(pager);
+  updateSentBar();
+  updateSub();
+}
+function go(d){ stopSpeak(); playing=false; cur=Math.max(0,Math.min(LESSONS.length-1,cur+d)); sentIdx=0; render(); }
+
+/* —— 句子级播放（支持上一句/下一句/点击跳句 = 自由调播放位置） —— */
+function updateSub(){
+  const sents=splitSentences(LESSONS[cur].narr);
+  subEl.textContent = (sentIdx<sents.length)? sents[sentIdx] : LESSONS[cur].narr;
+  $('#posTxt').textContent='句 '+(sents.length?Math.min(sentIdx+1,sents.length):0)+'/'+sents.length;
+}
+function updateSentBar(){
+  const sents=splitSentences(LESSONS[cur].narr);
+  const bar=$('#sentbar'); bar.innerHTML='';
+  sents.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.className='seg'+(i===sentIdx?' on':'')+(i<sentIdx?' done':'');
+    b.title=s; b.textContent=(i+1);
+    b.onclick=()=>{ playing=false; speakSentence(i); };
+    bar.appendChild(b);
+  });
+  $('#posTxt').textContent='句 '+(sents.length?Math.min(sentIdx+1,sents.length):0)+'/'+sents.length;
+}
+function updatePlayUI(){
+  $('#playS').textContent = playing? '⏸ 暂停' : '▶ 播放';
+  $('#playBtn').textContent = playing? '⏸ 暂停本课' : '▶ 听晓晓老师讲（本课）';
+}
+function speakSentence(i){
+  const sents=splitSentences(LESSONS[cur].narr);
+  if(i<0||i>=sents.length) return;
+  sentIdx=i;
+  stopSpeak();
+  updateSub(); updateSentBar(); updatePlayUI();
+  if(!('speechSynthesis' in window)) return; // 无语音也能看字幕
+  const u=new SpeechSynthesisUtterance(sents[i]);
+  u.lang='zh-CN'; u.rate=curRate; u.pitch=1.0;
+  if(voice)u.voice=voice;
+  u.onstart=()=>{ speaking=true; };
+  u.onend=()=>{
+    speaking=false;
+    if(playing && sentIdx < sents.length-1){ sentIdx++; speakSentence(sentIdx); }
+    else if(playing && sentIdx===sents.length-1){ playing=false; updatePlayUI(); }
+  };
+  synth.speak(u);
+}
+function playLesson(){ stopSpeak(); sentIdx=0; playing=true; speakSentence(0); }
+
+/* —— 语音初始化 —— */
+function setupVoices(){
+  const sel=$('#voiceSel'); sel.innerHTML='';
+  const vs=speechSynthesis.getVoices();
+  const zh=vs.filter(v=>/zh|chinese|中文|国语|普通话/i.test(v.lang+v.name));
+  let best=null;
+  zh.forEach(v=>{ if(/xiao|晓|neural|神经|online|yun/i.test(v.name)) best=best||v; });
+  voice = best || zh[0] || vs[0] || null;
+  zh.concat(vs).forEach((v,i)=>{
+    if(i>40)return;
+    const o=document.createElement('option'); o.value=i; o.textContent=v.name+' ('+v.lang+')';
+    if(v===voice)o.selected=true; sel.appendChild(o);
+  });
+  sel.onchange=()=>{ voice = speechSynthesis.getVoices()[+sel.value]||voice; };
+}
+function stopSpeak(){ if(synth&&synth.speaking) synth.cancel(); speaking=false; }
+
+$('#playBtn').onclick=()=>{ if(playing){ playing=false; stopSpeak(); updatePlayUI(); } else { playLesson(); } };
+$('#playS').onclick=()=>{
+  if(playing){ playing=false; stopSpeak(); updatePlayUI(); }
+  else { playing=true; const sents=splitSentences(LESSONS[cur].narr);
+    if(sentIdx>=sents.length-1) sentIdx=0; speakSentence(sentIdx); }
+};
+$('#prevS').onclick=()=>{
+  playing=false;
+  const sents=splitSentences(LESSONS[cur].narr);
+  if(sentIdx>0) speakSentence(sentIdx-1);
+  else if(cur>0){ go(-1); const s2=splitSentences(LESSONS[cur].narr); speakSentence(s2.length-1); }
+  else speakSentence(0);
+};
+$('#nextS').onclick=()=>{
+  playing=false;
+  const sents=splitSentences(LESSONS[cur].narr);
+  if(sentIdx<sents.length-1) speakSentence(sentIdx+1);
+  else if(cur<LESSONS.length-1){ go(1); speakSentence(0); }
+  else updateSub();
+};
+$('#rollBtn').onclick=()=>openQuiz(1,true);
+$('#rateSel').onchange=()=>{ curRate=parseFloat($('#rateSel').value)||1; if(speaking) speakSentence(sentIdx); };
+$('#timerBtn').onclick=()=>{ timerOn=!timerOn; $('#timerBtn').classList.toggle('on',timerOn);
+  $('#timerBtn').textContent= timerOn?'⏰ 不定时提问':'⏰ 已关'; if(timerOn) startTimer(); else { clearTimeout(timerH); } };
+// 不定时：随机 35~70 秒，有时抽题、有时来一句费曼快速回忆
+function startTimer(){
+  clearTimeout(timerH); if(!timerOn)return;
+  const loop=()=>{
+    if(document.querySelector('.mask.show')){ schedule(); return; }
+    if(Math.random()<0.72) openQuiz(1,true); else openRecall();
+    schedule();
+  };
+  const schedule=()=>{ const t=35000+Math.random()*35000; timerH=setTimeout(loop,t); };
+  schedule();
+}
+
+/* —— 弹窗通用 —— */
+function showModal(html){ $('#modal').innerHTML=html; $('#mask').classList.add('show'); }
+function closeModal(){ $('#mask').classList.remove('show'); stopSpeak(); }
+$('#mask').onclick=(e)=>{ if(e.target.id==='mask') closeModal(); };
+
+function addScore(n,msg){ score+=n; scoreEl.textContent=score; toast(msg+' +'+n+'⭐'); }
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
+
+/* —— 测验 —— */
+function openQuiz(n, random){
+  const pool = random ? QUIZ : QUIZ.slice();
+  const picked=[]; const copy=pool.slice();
+  for(let i=0;i<n && copy.length;i++){ picked.push(copy.splice(Math.floor(Math.random()*copy.length),1)[0]); }
+  let idx=0, correct=0;
+  function step(){
+    if(idx>=picked.length){ finish(); return; }
+    const Q=picked[idx];
+    showModal(`<h3>📝 第 ${idx+1}/${picked.length} 题</h3>
+      <div class="who">晓晓老师提问时间</div>
+      <p><b>${Q.q}</b></p>
+      ${Q.opts.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join('')}
+      <div class="explain" id="ex"></div>
+      <div class="row"><button class="btn" onclick="closeModal()">关闭</button></div>`);
+    $('#modal').querySelectorAll('.opt').forEach(b=>{
+      b.onclick=()=>{
+        const i=+b.dataset.i; const opts=$('#modal').querySelectorAll('.opt');
+        opts.forEach(o=>o.disabled=true);
+        if(i===Q.a){ b.classList.add('correct'); correct++; }
+        else { b.classList.add('wrong'); opts[Q.a].classList.add('correct'); }
+        const ex=$('#ex'); ex.innerHTML='✅ 解析：'+Q.e; ex.classList.add('show');
+        if(i===Q.a) addScore(10,'答对啦');
+      };
+    });
+  }
+  function finish(){
+    const star = '⭐'.repeat(Math.max(1,Math.round(correct/picked.length*5)));
+    showModal(`<h3>🏁 测验结束</h3><div class="who">本次答对 ${correct}/${picked.length}</div>
+      <p style="font-size:22px">${star}</p>
+      <p>累计得分：<b>${score} ⭐</b></p>
+      <div class="row"><button class="btn" style="background:var(--brand);color:#fff" onclick="closeModal()">好的</button>
+      <button class="btn" onclick="openQuiz(${n},${random})">再来一次</button></div>`);
+    quizDone.add(cur); render();
+  }
+  step();
+}
+
+/* —— 复习站小测 —— */
+function openReview(){
+  const R = QUIZ.slice(0,9); // 旧知识点
+  const picked=[]; const copy=R.slice();
+  for(let i=0;i<3 && copy.length;i++){ picked.push(copy.splice(Math.floor(Math.random()*copy.length),1)[0]); }
+  let idx=0, correct=0;
+  function step(){
+    if(idx>=picked.length){ finish(); return; }
+    const Q=picked[idx];
+    showModal(`<h3>🔁 复习小测 第 ${idx+1}/3 题</h3>
+      <div class="who">唤醒旧口诀～</div>
+      <p><b>${Q.q}</b></p>
+      ${Q.opts.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join('')}
+      <div class="explain" id="ex"></div>
+      <div class="row"><button class="btn" onclick="closeModal()">关闭</button></div>`);
+    $('#modal').querySelectorAll('.opt').forEach(b=>{
+      b.onclick=()=>{
+        const i=+b.dataset.i; const opts=$('#modal').querySelectorAll('.opt');
+        opts.forEach(o=>o.disabled=true);
+        if(i===Q.a){ b.classList.add('correct'); correct++; }
+        else { b.classList.add('wrong'); opts[Q.a].classList.add('correct'); }
+        const ex=$('#ex'); ex.innerHTML='✅ 解析：'+Q.e; ex.classList.add('show');
+        if(i===Q.a) addScore(8,'复习答对');
+      };
+    });
+  }
+  function finish(){
+    showModal(`<h3>🔔 复习完成</h3><div class="who">答对 ${correct}/3</div>
+      <p>旧口诀唤醒成功！累计得分 <b>${score} ⭐</b></p>
+      <p class="lead">带着旧知识，继续往下学吧～</p>
+      <div class="row"><button class="btn" style="background:var(--brand);color:#fff" onclick="closeModal()">继续</button>
+      <button class="btn" onclick="closeModal()">去学新课 ➜</button></div>`);
+  }
+  step();
+}
+
+/* —— 费曼快速回忆（不定时弹出） —— */
+function openRecall(){
+  showModal(`<h3>🗣️ 晓晓老师突然考你</h3>
+    <div class="who">费曼记忆：用一句话讲给外行听</div>
+    <p><b>刚才讲的内容里，挑一个你最熟的，用一句话说说它是什么 / 有啥用？</b></p>
+    <textarea id="rc" placeholder="比如：膳食纤维像清道夫，帮肠道通便…"></textarea>
+    <div class="row"><button class="btn" style="background:var(--brand);color:#fff" onclick="saveRecall()">说完了，记一笔</button>
+    <button class="btn" onclick="closeModal()">先跳过</button></div>`);
+}
+function saveRecall(){
+  const v=$('#rc').value.trim();
+  if(!v){ toast('写一句再保存哦'); return; }
+  addScore(6,'费曼回忆+1');
+  try{ localStorage.setItem('xiaoxiao_recall_'+Date.now(), v); }catch(e){}
+  showModal(`<h3>✅ 已记下</h3><div class="who">累计得分 ${score} ⭐</div>
+    <pre style="white-space:pre-wrap;background:var(--soft);padding:12px;border-radius:10px;font-size:14px">${v}</pre>
+    <div class="row"><button class="btn" style="background:var(--brand);color:#fff" onclick="closeModal()">继续学习</button></div>`);
+}
+
+/* —— 费曼自检（完整版） —— */
+function openFeynman(){
+  showModal(`<h3>🗣️ 费曼自检</h3>
+    <div class="who">用自己的话讲给"奶奶"听，越像大白话越好</div>
+    <p>① 注册 vs 公共营养师 的区别：</p>
+    <textarea id="f1" placeholder="比如：注册要考很难的试，公共比较好考…"></textarea>
+    <p>② 七大营养素名字 + 各一个作用：</p>
+    <textarea id="f2" placeholder="比如：蛋白质像砖块长身体…"></textarea>
+    <p>③ 钙/铁/碘 其中一个的作用和食物：</p>
+    <textarea id="f3" placeholder="比如：钙像钢筋，牛奶里多…"></textarea>
+    <p>④ 蔬菜和水果能不能互相代替？每天吃多少？</p>
+    <textarea id="f4" placeholder="比如：不能替，菜一斤果半斤…"></textarea>
+    <p>给自己打分（讲得越像大白话越高）：</p>
+    <div class="stars" id="stars"><span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span></div>
+    <div class="row"><button class="btn" style="background:var(--brand);color:#fff" onclick="saveFeynman()">保存并评分</button>
+    <button class="btn" onclick="closeModal()">稍后</button></div>`);
+  let star=0;
+  $('#stars').querySelectorAll('span').forEach(s=>{
+    s.onclick=()=>{ star=+s.dataset.v;
+      $('#stars').querySelectorAll('span').forEach(x=>x.classList.toggle('lit',+x.dataset.v<=star)); };
+  });
+  window.__feynmanStar=()=>star;
+}
+function saveFeynman(){
+  const f1=$('#f1').value.trim(), f2=$('#f2').value.trim(), f3=$('#f3').value.trim(), f4=$('#f4').value.trim();
+  const star=window.__feynmanStar?window.__feynmanStar():0;
+  if(!f1||!f2||!f3||!f4){ toast('四道题都写一点再保存哦'); return; }
+  if(star>=3){ addScore(15,'费曼讲得不错'); } else { addScore(5,'完成自检，再练练'); }
+  feynmanDone=true;
+  const txt=`【费曼自检笔记】\n① ${f1}\n② ${f2}\n③ ${f3}\n④ ${f4}\n自评：${'★'.repeat(star)}`;
+  try{ localStorage.setItem('xiaoxiao_feynman_'+Date.now(), txt); }catch(e){}
+  showModal(`<h3>✅ 已保存</h3><div class="who">累计得分 ${score} ⭐</div>
+    <pre style="white-space:pre-wrap;background:var(--soft);padding:12px;border-radius:10px;font-size:13px">${txt}</pre>
+    <div class="row"><button class="btn" style="background:var(--brand);color:#fff" onclick="closeModal()">继续学习</button></div>`);
+  quizDone.add(cur); render();
+}
+
+/* —— 小明问答 —— */
+function openXiaoMing(){
+  let idx=0, correct=0;
+  function step(){
+    if(idx>=XM.length){ finish(); return; }
+    const Q=XM[idx];
+    showModal(`<h3>🙋 小明的问题 ${idx+1}/${XM.length}</h3>
+      <div class="who" style="color:var(--brand);font-weight:700">${Q.q}</div>
+      ${Q.opts.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join('')}
+      <div class="explain" id="ex"></div>
+      <div class="row"><button class="btn" onclick="closeModal()">关闭</button></div>`);
+    $('#modal').querySelectorAll('.opt').forEach(b=>{
+      b.onclick=()=>{
+        const i=+b.dataset.i; const opts=$('#modal').querySelectorAll('.opt');
+        opts.forEach(o=>o.disabled=true);
+        if(i===Q.a){ b.classList.add('correct'); correct++; }
+        else { b.classList.add('wrong'); opts[Q.a].classList.add('correct'); }
+        const ex=$('#ex'); ex.innerHTML='💡 '+Q.e; ex.classList.add('show');
+        if(i===Q.a) addScore(8,'小明服气了');
+        idx++;
+        setTimeout(()=>{ if(idx<XM.length) step(); else finish(); }, 900);
+      };
+    });
+  }
+  function finish(){
+    showModal(`<h3>🎉 小明被你说服啦</h3><div class="who">答对 ${correct}/${XM.length}</div>
+      <p>累计得分：<b>${score} ⭐</b></p>
+      <div class="row"><button class="btn" style="background:var(--brand);color:#fff" onclick="closeModal()">返回课堂</button>
+      <button class="btn" onclick="openXiaoMing()">再战</button></div>`);
+    xmDone.add(cur); render();
+  }
+  step();
+}
+
+/* ===================== 启动 ===================== */
+window.addEventListener('DOMContentLoaded',()=>{
+  if('speechSynthesis' in window){ synth=window.speechSynthesis; setupVoices();
+    speechSynthesis.onvoiceschanged=setupVoices; }
+  else { $('#playBtn').disabled=true; $('#playBtn').textContent='本浏览器不支持语音'; }
+  render();
+  startTimer();
+});
+
+</script>
+</body>
+</html>
